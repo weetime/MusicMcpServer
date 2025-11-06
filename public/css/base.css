@@ -1,0 +1,34 @@
+/* Global Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 
+                 'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif;
+    background: #121212;
+    min-height: 100vh;
+    color: #FFFFFF;
+    padding: 0;
+    padding-bottom: 100px; /* Add bottom padding for fixed player */
+    overflow-x: hidden;
+}
+
+/* Container */
+.container {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 40px 60px;
+    padding-top: 300px; /* Space for fixed header and search */
+    box-sizing: border-box;
+    overflow-x: hidden;
+}
+
+/* Utility Classes */
+.hidden {
+    display: none !important;
+}
+

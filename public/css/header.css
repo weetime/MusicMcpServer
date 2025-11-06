@@ -1,0 +1,31 @@
+/* Fixed Top Header */
+.fixed-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: #121212;
+    padding: 24px 60px;
+    z-index: 999;
+    border-bottom: 1px solid #282828;
+}
+
+.header-content {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #FFFFFF;
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+}
+
+.subtitle {
+    font-size: 1rem;
+    font-weight: 400;
+    color: #B3B3B3;
+}
+
