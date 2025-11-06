@@ -15,6 +15,8 @@ export const dom = {
     searchResults: document.getElementById('searchResults'),
     resultsList: document.getElementById('resultsList'),
     resultsCount: document.getElementById('resultsCount'),
+    prevPageBtn: document.getElementById('prevPageBtn'),
+    nextPageBtn: document.getElementById('nextPageBtn'),
     
     // Player elements.
     musicPlayer: document.getElementById('musicPlayer'),

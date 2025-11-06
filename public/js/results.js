@@ -1,41 +1,184 @@
 /**
  * Results Display Module
- * Handles search results display and rendering.
+ * Handles search results display and rendering with pagination support.
  */
 
 import { dom } from './dom.js';
-import { setPlaylist } from './state.js';
+import { setPlaylist, playlist } from './state.js';
 import { playTrack } from './player.js';
 import { renderPlaylist } from './playlist.js';
 import { hideLoading } from './ui.js';
+import { handleSearch } from './search.js';
+
+// Pagination state
+let currentPage = 1;
+let totalResults = 0;
+let currentQuery = '';
+const PAGE_SIZE = 12;
+let shouldPreserveScroll = false;
+let preservedScrollY = 0;
 
 /**
- * Displays search results.
+ * Displays search results with pagination.
  * @param {Array} tracks - Array of track objects.
+ * @param {Object} pagination - Pagination information.
  */
-export function displayResults(tracks) {
+export function displayResults(tracks, pagination = null) {
     hideLoading();
+    
+    // Reset opacity for fade-in effect.
+    if (dom.resultsList) {
+        dom.resultsList.style.opacity = '0';
+    }
     
     dom.resultsList.innerHTML = '';
     
-    // Update playlist with new search results.
+    // Update playlist with current page results.
     setPlaylist(tracks);
     
-    // Update results count.
-    if (dom.resultsCount) {
-        dom.resultsCount.textContent = `${tracks.length} result${tracks.length !== 1 ? 's' : ''}`;
+    // Update pagination state and UI.
+    if (pagination) {
+        totalResults = pagination.total || 0;
+        currentPage = Math.floor((pagination.offset || 0) / PAGE_SIZE) + 1;
+        
+        // Update results count display.
+        if (dom.resultsCount) {
+            const start = (pagination.offset || 0) + 1;
+            const end = Math.min((pagination.offset || 0) + PAGE_SIZE, totalResults);
+            dom.resultsCount.textContent = `显示 ${start}-${end} / 共 ${totalResults} 条结果`;
+        }
+        
+        // Update navigation buttons state.
+        updateNavigationButtons();
+    } else {
+        // Fallback for backward compatibility.
+        if (dom.resultsCount) {
+            dom.resultsCount.textContent = `${tracks.length} result${tracks.length !== 1 ? 's' : ''}`;
+        }
+        // Disable navigation buttons if no pagination info.
+        if (dom.prevPageBtn) dom.prevPageBtn.disabled = true;
+        if (dom.nextPageBtn) dom.nextPageBtn.disabled = true;
     }
     
+    // Create and append result items with staggered animation.
     tracks.forEach((track, index) => {
         const resultItem = createResultItem(track, index);
+        
+        // Set initial state for animation.
+        resultItem.style.opacity = '0';
+        resultItem.style.transform = 'translateY(20px)';
+        resultItem.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+        
         dom.resultsList.appendChild(resultItem);
+        
+        // Add staggered fade-in animation.
+        setTimeout(() => {
+            requestAnimationFrame(() => {
+                resultItem.style.opacity = '1';
+                resultItem.style.transform = 'translateY(0)';
+            });
+        }, index * 15); // Stagger by 15ms per item for smoother effect
     });
     
     dom.searchResults.classList.remove('hidden');
     
+    // Fade in the results list.
+    setTimeout(() => {
+        if (dom.resultsList) {
+            dom.resultsList.style.opacity = '1';
+            dom.resultsList.style.transition = 'opacity 0.4s ease';
+        }
+    }, 50);
+    
+    // Reset horizontal scroll position to start.
+    if (dom.resultsList) {
+        setTimeout(() => {
+            dom.resultsList.scrollTo({ left: 0, behavior: 'smooth' });
+        }, 200);
+    }
+    
+    // Restore scroll position if it was preserved (for pagination).
+    if (shouldPreserveScroll) {
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                window.scrollTo({ top: preservedScrollY, behavior: 'auto' });
+                shouldPreserveScroll = false;
+            });
+        });
+    }
+    
     // Update playlist display.
     renderPlaylist();
 }
+
+/**
+ * Sets the current query for pagination.
+ * @param {string} query - Current search query.
+ */
+export function setPaginationQuery(query) {
+    currentQuery = query;
+    currentPage = 1;
+    // Reset scroll preservation flag for new searches.
+    shouldPreserveScroll = false;
+}
+
+/**
+ * Updates navigation buttons state based on current page.
+ */
+function updateNavigationButtons() {
+    const totalPages = Math.ceil(totalResults / PAGE_SIZE);
+    
+    if (dom.prevPageBtn) {
+        dom.prevPageBtn.disabled = currentPage <= 1;
+    }
+    if (dom.nextPageBtn) {
+        dom.nextPageBtn.disabled = currentPage >= totalPages;
+    }
+}
+
+/**
+ * Goes to the previous page.
+ */
+export async function goToPreviousPage() {
+    if (currentPage <= 1 || !currentQuery) return;
+    
+    // Store current scroll position to prevent page jump.
+    preservedScrollY = window.scrollY;
+    shouldPreserveScroll = true;
+    
+    // Add fade-out effect before loading new page.
+    if (dom.resultsList) {
+        dom.resultsList.style.opacity = '0.3';
+        dom.resultsList.style.transition = 'opacity 0.2s ease';
+    }
+    
+    const newPage = currentPage - 1;
+    await handleSearch(newPage, currentQuery);
+}
+
+/**
+ * Goes to the next page.
+ */
+export async function goToNextPage() {
+    if (!currentQuery) return;
+    
+    const totalPages = Math.ceil(totalResults / PAGE_SIZE);
+    if (currentPage >= totalPages) return;
+    
+    // Store current scroll position to prevent page jump.
+    preservedScrollY = window.scrollY;
+    shouldPreserveScroll = true;
+    
+    // Add fade-out effect before loading new page.
+    if (dom.resultsList) {
+        dom.resultsList.style.opacity = '0.3';
+        dom.resultsList.style.transition = 'opacity 0.2s ease';
+    }
+    
+    const newPage = currentPage + 1;
+    await handleSearch(newPage, currentQuery);
+}
+
 
 /**
  * Creates a result card element in the new card style.

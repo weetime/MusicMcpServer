@@ -5,8 +5,18 @@
     }
     
     .results-grid {
-        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-        gap: 20px;
+        grid-template-columns: repeat(6, minmax(160px, 1fr));
+        grid-template-rows: repeat(2, 1fr);
+    }
+    
+    .result-card {
+        width: 160px;
+        min-width: 160px;
+        max-width: 160px;
+    }
+    
+    .album-art-wrapper {
+        max-width: 128px;
     }
 }
 
@@ -72,13 +82,35 @@
         max-height: 300px;
     }
     
+    .results-wrapper {
+        gap: 8px;
+    }
+    
+    .results-nav-btn {
+        width: 40px;
+        height: 40px;
+        min-width: 40px;
+    }
+    
+    .results-nav-btn svg {
+        width: 20px;
+        height: 20px;
+    }
+    
     .results-grid {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(6, minmax(140px, 1fr));
+        grid-template-rows: repeat(2, 1fr);
         gap: 16px;
     }
     
-    .album-art-wrapper {
+    .result-card {
+        width: 140px;
+        min-width: 140px;
         max-width: 140px;
+    }
+    
+    .album-art-wrapper {
+        max-width: 108px;
         margin: 0 auto 16px;
     }
     
@@ -181,13 +213,35 @@
         border-radius: 0 1.25rem 1.25rem 0;
     }
     
+    .results-wrapper {
+        gap: 6px;
+    }
+    
+    .results-nav-btn {
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
+    }
+    
+    .results-nav-btn svg {
+        width: 18px;
+        height: 18px;
+    }
+    
     .results-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(6, minmax(120px, 1fr));
+        grid-template-rows: repeat(2, 1fr);
         gap: 12px;
     }
     
-    .album-art-wrapper {
+    .result-card {
+        width: 120px;
+        min-width: 120px;
         max-width: 120px;
+    }
+    
+    .album-art-wrapper {
+        max-width: 88px;
         margin: 0 auto 16px;
     }
     

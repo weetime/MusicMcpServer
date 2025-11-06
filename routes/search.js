@@ -7,11 +7,12 @@ const neteaseService = require('../services/netease');
  * GET /api/search
  * Query parameters:
  *   - q: search query (required)
- *   - limit: maximum number of results (default: 10, max: 50)
+ *   - limit: maximum number of results per page (default: 12, max: 50)
+ *   - offset: offset for pagination (default: 0)
  */
 router.get('/search', async (req, res, next) => {
   try {
-    const { q, limit = 10 } = req.query;
+    const { q, limit = 12, offset = 0 } = req.query;
 
     // Validate query parameter.
     if (!q) {
@@ -34,13 +35,30 @@ router.get('/search', async (req, res, next) => {
       });
     }
 
+    // Validate offset parameter.
+    const parsedOffset = parseInt(offset);
+    if (isNaN(parsedOffset) || parsedOffset < 0) {
+      return res.status(400).json({
+        error: {
+          message: 'Offset must be a non-negative integer',
+          status: 400
+        }
+      });
+    }
+
     // Perform search via Netease service.
-    const results = await neteaseService.search(q, parsedLimit);
+    const results = await neteaseService.search(q, parsedLimit, parsedOffset);
     
     res.json({
       success: true,
       query: q,
       source: 'netease',
+      pagination: {
+        total: results.total || 0,
+        limit: results.limit || parsedLimit,
+        offset: results.offset || parsedOffset,
+        hasMore: results.hasMore || false
+      },
       results: {
         tracks: results
       }

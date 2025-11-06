@@ -82,7 +82,21 @@
                 <h2 class="results-title">Search Results</h2>
                 <span id="resultsCount" class="results-count">0 results</span>
             </div>
-            <div id="resultsList" class="results-grid"></div>
+            <div class="results-wrapper">
+                <button id="prevPageBtn" class="results-nav-btn results-nav-prev" title="Previous Page">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="19 20 9 12 19 4 19 20"></polygon>
+                        <line x1="5" y1="19" x2="5" y2="5"></line>
+                    </svg>
+                </button>
+                <div id="resultsList" class="results-grid"></div>
+                <button id="nextPageBtn" class="results-nav-btn results-nav-next" title="Next Page">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="5 4 15 12 5 20 5 4"></polygon>
+                        <line x1="19" y1="5" x2="19" y2="19"></line>
+                    </svg>
+                </button>
+            </div>
         </div>
     </div>
 

@@ -27,6 +27,7 @@ import {
 } from './player.js';
 import { togglePlaylist, renderPlaylist } from './playlist.js';
 import { toggleLyrics } from './lyrics.js';
+import { goToPreviousPage, goToNextPage } from './results.js';
 
 /**
  * Initializes the application.
@@ -82,6 +83,14 @@ function init() {
     
     // Queue/Playlist button events.
     dom.queueBtn.addEventListener('click', togglePlaylist);
+    
+    // Results pagination button events.
+    if (dom.prevPageBtn) {
+        dom.prevPageBtn.addEventListener('click', goToPreviousPage);
+    }
+    if (dom.nextPageBtn) {
+        dom.nextPageBtn.addEventListener('click', goToNextPage);
+    }
     
     // Lyrics button events.
     if (dom.lyricsBtn) {

@@ -36,14 +36,16 @@ class NeteaseService {
    * Searches for tracks on Netease Cloud Music.
    * @param {string} keywords - Search keywords.
    * @param {number} limit - Maximum number of results (default: 10).
-   * @returns {Promise<Object>} Formatted search results.
+   * @param {number} offset - Offset for pagination (default: 0).
+   * @returns {Promise<Object>} Formatted search results with pagination info.
    */
-  async search(keywords, limit = 10) {
+  async search(keywords, limit = 10, offset = 0) {
     try {
       // Use cloudsearch endpoint for better results.
       const config = this.getRequestConfig({
         keywords: keywords,
         limit: limit,
+        offset: offset,
         type: 1 // 1: single tracks, 10: albums, 100: artists
       });
       
@@ -53,7 +55,16 @@ class NeteaseService {
         throw new Error('Netease API returned error: ' + response.data.code);
       }
 
-      return this.formatSearchResults(response.data.result);
+      const formatted = this.formatSearchResults(response.data.result);
+      
+      // Add pagination info.
+      const total = response.data.result?.songCount || 0;
+      formatted.total = total;
+      formatted.offset = offset;
+      formatted.limit = limit;
+      formatted.hasMore = offset + limit < total;
+      
+      return formatted;
     } catch (error) {
       console.error('Netease search error:', error.message);
       throw new Error('Failed to search on Netease Cloud Music');
