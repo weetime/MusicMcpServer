@@ -26,6 +26,7 @@ import {
     updateVolumeIcon
 } from './player.js';
 import { togglePlaylist, renderPlaylist } from './playlist.js';
+import { toggleLyrics } from './lyrics.js';
 
 /**
  * Initializes the application.
@@ -82,12 +83,29 @@ function init() {
     // Queue/Playlist button events.
     dom.queueBtn.addEventListener('click', togglePlaylist);
     
+    // Lyrics button events.
+    if (dom.lyricsBtn) {
+        dom.lyricsBtn.addEventListener('click', toggleLyrics);
+    }
+    if (dom.lyricsCloseBtn) {
+        dom.lyricsCloseBtn.addEventListener('click', toggleLyrics);
+    }
+    
     // Hide playlist when clicking outside.
     document.addEventListener('click', (e) => {
         if (!e.target.closest('.player-right')) {
             dom.playlistDropdown.classList.add('hidden');
         }
     });
+    
+    // Hide lyrics panel when clicking outside (on backdrop).
+    if (dom.lyricsPanel) {
+        dom.lyricsPanel.addEventListener('click', (e) => {
+            if (e.target === dom.lyricsPanel) {
+                toggleLyrics();
+            }
+        });
+    }
     
     // Audio player events.
     dom.audioPlayer.addEventListener('timeupdate', updateProgress);

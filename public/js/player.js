@@ -15,6 +15,7 @@ import {
 } from './state.js';
 import { qualityNames } from './state.js';
 import { formatTime } from './utils.js';
+import { fetchLyrics, updateLyrics, clearLyrics } from './lyrics.js';
 
 /**
  * Plays the selected track.
@@ -81,6 +82,15 @@ export async function playTrack(track) {
         
         setIsPlaying(true);
         updatePlayPauseIcon();
+        
+        // Fetch lyrics for Netease tracks.
+        if (track.preview_url.startsWith('netease:')) {
+            const songId = track.preview_url.replace('netease:', '');
+            await fetchLyrics(songId);
+        } else {
+            // Clear lyrics for non-Netease tracks.
+            clearLyrics();
+        }
     } catch (error) {
         console.error('Playback error:', error);
         alert('Playback failed. Please try again later.\n\n' + error.message);
@@ -169,6 +179,9 @@ export function updateProgress() {
         const progress = (dom.audioPlayer.currentTime / dom.audioPlayer.duration) * 100;
         dom.progressBar.value = progress;
         dom.currentTime.textContent = formatTime(dom.audioPlayer.currentTime);
+        
+        // Update lyrics synchronization.
+        updateLyrics(dom.audioPlayer.currentTime);
     }
 }
 
@@ -218,6 +231,9 @@ export function closePlayerPanel() {
     setIsPlaying(false);
     setCurrentTrack(null);
     setCurrentTrackIndex(-1);
+    
+    // Clear lyrics when closing player.
+    clearLyrics();
 }
 
 /**

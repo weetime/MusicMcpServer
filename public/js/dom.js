@@ -39,6 +39,12 @@ export const dom = {
     queueBtn: document.getElementById('queueBtn'),
     playlistDropdown: document.getElementById('playlistDropdown'),
     playlistList: document.getElementById('playlistList'),
-    playlistCount: document.getElementById('playlistCount')
+    playlistCount: document.getElementById('playlistCount'),
+    
+    // Lyrics elements.
+    lyricsBtn: document.getElementById('lyricsBtn'),
+    lyricsPanel: document.getElementById('lyricsPanel'),
+    lyricsContainer: document.getElementById('lyricsContainer'),
+    lyricsCloseBtn: document.getElementById('lyricsCloseBtn')
 };
 
