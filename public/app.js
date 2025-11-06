@@ -24,10 +24,14 @@ const progressBar = document.getElementById('progressBar');
 const currentTime = document.getElementById('currentTime');
 const duration = document.getElementById('duration');
 const volumeBar = document.getElementById('volumeBar');
+const searchHistory = document.getElementById('searchHistory');
+const searchHistoryList = document.getElementById('searchHistoryList');
+const clearHistoryBtn = document.getElementById('clearHistoryBtn');
 
 // Application state.
 let currentTrack = null;
 let isPlaying = false;
+const MAX_HISTORY_ITEMS = 10; // Maximum number of search history items to display.
 
 // Quality level mapping for display.
 const qualityNames = {
@@ -45,10 +49,28 @@ function init() {
     // Event listeners.
     searchBtn.addEventListener('click', handleSearch);
     songInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') handleSearch();
+        if (e.key === 'Enter') {
+            hideSearchHistory();
+            handleSearch();
+        }
     });
     artistInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') handleSearch();
+        if (e.key === 'Enter') {
+            hideSearchHistory();
+            handleSearch();
+        }
+    });
+    
+    // Search history events.
+    songInput.addEventListener('focus', showSearchHistory);
+    songInput.addEventListener('input', handleSearchInput);
+    clearHistoryBtn.addEventListener('click', clearSearchHistory);
+    
+    // Hide search history when clicking outside.
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.search-bar-wrapper')) {
+            hideSearchHistory();
+        }
     });
     
     closePlayer.addEventListener('click', closePlayerPanel);
@@ -66,6 +88,9 @@ function init() {
     const initialVolume = volumeBar.value / 100;
     audioPlayer.volume = initialVolume;
     updateVolumeIcon(initialVolume);
+    
+    // Load and display search history.
+    renderSearchHistory();
 }
 
 /**
@@ -86,6 +111,12 @@ async function handleSearch() {
     if (artist) {
         query += ` ${artist}`;
     }
+    
+    // Save to search history.
+    saveSearchHistory(query);
+    
+    // Hide search history.
+    hideSearchHistory();
     
     // Show loading state.
     showLoading();
@@ -396,6 +427,182 @@ function hideLoading() {
  */
 function hideResults() {
     searchResults.classList.add('hidden');
+}
+
+/**
+ * Search History Management Functions.
+ */
+
+/**
+ * Saves a search query to history.
+ * @param {string} query - The search query to save.
+ */
+function saveSearchHistory(query) {
+    if (!query || query.trim() === '') return;
+    
+    let history = getSearchHistory();
+    
+    // Remove duplicate if exists.
+    history = history.filter(item => item !== query);
+    
+    // Add to the beginning.
+    history.unshift(query);
+    
+    // Limit to MAX_HISTORY_ITEMS.
+    history = history.slice(0, MAX_HISTORY_ITEMS);
+    
+    // Save to localStorage.
+    localStorage.setItem('musicSearchHistory', JSON.stringify(history));
+    
+    // Update display.
+    renderSearchHistory();
+}
+
+/**
+ * Gets search history from localStorage.
+ * @returns {string[]} Array of search queries.
+ */
+function getSearchHistory() {
+    try {
+        const history = localStorage.getItem('musicSearchHistory');
+        return history ? JSON.parse(history) : [];
+    } catch (error) {
+        console.error('Error reading search history:', error);
+        return [];
+    }
+}
+
+/**
+ * Renders search history list.
+ */
+function renderSearchHistory() {
+    const history = getSearchHistory();
+    searchHistoryList.innerHTML = '';
+    
+    if (history.length === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'search-history-empty';
+        empty.textContent = '暂无搜索历史';
+        searchHistoryList.appendChild(empty);
+        return;
+    }
+    
+    history.forEach((query, index) => {
+        const item = document.createElement('div');
+        item.className = 'search-history-item';
+        item.setAttribute('data-query', query);
+        
+        const icon = document.createElement('svg');
+        icon.className = 'search-history-item-icon';
+        icon.setAttribute('width', '20');
+        icon.setAttribute('height', '20');
+        icon.setAttribute('viewBox', '0 0 24 24');
+        icon.setAttribute('fill', 'none');
+        icon.setAttribute('stroke', 'currentColor');
+        icon.setAttribute('stroke-width', '2');
+        icon.setAttribute('stroke-linecap', 'round');
+        icon.setAttribute('stroke-linejoin', 'round');
+        icon.innerHTML = '<circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>';
+        
+        const text = document.createElement('span');
+        text.className = 'search-history-item-text';
+        text.textContent = query;
+        
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'search-history-item-delete';
+        deleteBtn.setAttribute('title', '删除');
+        deleteBtn.innerHTML = `
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        `;
+        deleteBtn.onclick = (e) => {
+            e.stopPropagation();
+            deleteHistoryItem(index);
+        };
+        
+        item.appendChild(icon);
+        item.appendChild(text);
+        item.appendChild(deleteBtn);
+        
+        item.onclick = () => {
+            selectHistoryItem(query);
+        };
+        
+        searchHistoryList.appendChild(item);
+    });
+}
+
+/**
+ * Shows search history dropdown.
+ */
+function showSearchHistory() {
+    const history = getSearchHistory();
+    if (history.length > 0) {
+        searchHistory.classList.remove('hidden');
+    }
+}
+
+/**
+ * Hides search history dropdown.
+ */
+function hideSearchHistory() {
+    searchHistory.classList.add('hidden');
+}
+
+/**
+ * Clears all search history.
+ */
+function clearSearchHistory() {
+    if (confirm('确定要清除所有搜索历史吗？')) {
+        localStorage.removeItem('musicSearchHistory');
+        renderSearchHistory();
+        hideSearchHistory();
+    }
+}
+
+/**
+ * Deletes a single history item.
+ * @param {number} index - Index of the item to delete.
+ */
+function deleteHistoryItem(index) {
+    let history = getSearchHistory();
+    history.splice(index, 1);
+    localStorage.setItem('musicSearchHistory', JSON.stringify(history));
+    renderSearchHistory();
+}
+
+/**
+ * Handles search input changes.
+ */
+function handleSearchInput() {
+    const value = songInput.value.trim();
+    if (value === '') {
+        showSearchHistory();
+    } else {
+        hideSearchHistory();
+    }
+}
+
+/**
+ * Selects a history item and performs search.
+ * @param {string} query - The search query to use.
+ */
+function selectHistoryItem(query) {
+    // Parse query to extract song and artist if possible.
+    const parts = query.split(' ');
+    if (parts.length >= 2) {
+        // Try to split: assume first part is song, rest is artist.
+        songInput.value = parts[0];
+        artistInput.value = parts.slice(1).join(' ');
+    } else {
+        songInput.value = query;
+        artistInput.value = '';
+    }
+    
+    hideSearchHistory();
+    handleSearch();
 }
 
 /**
