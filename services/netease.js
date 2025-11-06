@@ -3,11 +3,33 @@ const axios = require('axios');
 /**
  * Netease Cloud Music API service.
  * This service integrates with NeteaseCloudMusicApi for searching and playing music.
+ * Now using local routes (integrated into the same server).
  */
 class NeteaseService {
   constructor() {
-    // Base URL for Netease API (can be local or deployed instance)
-    this.baseURL = process.env.NETEASE_API_URL || 'http://localhost:4000';
+    // Base URL for Netease API - uses internal port 4000 by default.
+    // Can be overridden with NETEASE_API_URL for external API usage.
+    const neteasePort = process.env.NETEASE_PORT || 4000;
+    this.baseURL = process.env.NETEASE_API_URL || `http://localhost:${neteasePort}`;
+    
+    // Cookie for authentication (enables full song access and VIP features).
+    this.cookie = process.env.NETEASE_COOKIE || '';
+  }
+  
+  /**
+   * Gets request config with cookie if available.
+   * @param {Object} params - Request parameters.
+   * @returns {Object} Axios request config.
+   */
+  getRequestConfig(params = {}) {
+    const config = { params };
+    
+    // Add cookie to request if configured.
+    if (this.cookie) {
+      config.params.cookie = this.cookie;
+    }
+    
+    return config;
   }
 
   /**
@@ -19,13 +41,13 @@ class NeteaseService {
   async search(keywords, limit = 10) {
     try {
       // Use cloudsearch endpoint for better results.
-      const response = await axios.get(`${this.baseURL}/cloudsearch`, {
-        params: {
-          keywords: keywords,
-          limit: limit,
-          type: 1 // 1: single tracks, 10: albums, 100: artists
-        }
+      const config = this.getRequestConfig({
+        keywords: keywords,
+        limit: limit,
+        type: 1 // 1: single tracks, 10: albums, 100: artists
       });
+      
+      const response = await axios.get(`${this.baseURL}/cloudsearch`, config);
 
       if (response.data.code !== 200) {
         throw new Error('Netease API returned error: ' + response.data.code);
@@ -46,19 +68,26 @@ class NeteaseService {
    */
   async getSongUrl(id, level = 'standard') {
     try {
-      const response = await axios.get(`${this.baseURL}/song/url/v1`, {
-        params: {
-          id: id,
-          level: level
-        }
+      const config = this.getRequestConfig({
+        id: id,
+        level: level
       });
+      
+      const response = await axios.get(`${this.baseURL}/song/url/v1`, config);
 
       if (response.data.code !== 200 || !response.data.data || response.data.data.length === 0) {
-        console.warn(`No URL found for song ${id}`);
+        console.warn(`No URL found for song ${id} with level ${level}`);
         return null;
       }
 
-      return response.data.data[0].url;
+      const songData = response.data.data[0];
+      
+      // Log additional info if cookie is used.
+      if (this.cookie && songData.freeTrialInfo) {
+        console.log(`Song ${id}: Free trial detected, may be limited to 30s`);
+      }
+
+      return songData.url;
     } catch (error) {
       console.error('Get song URL error:', error.message);
       return null;
@@ -72,9 +101,8 @@ class NeteaseService {
    */
   async getLyric(id) {
     try {
-      const response = await axios.get(`${this.baseURL}/lyric`, {
-        params: { id: id }
-      });
+      const config = this.getRequestConfig({ id: id });
+      const response = await axios.get(`${this.baseURL}/lyric`, config);
 
       if (response.data.code !== 200) {
         return null;
@@ -136,6 +164,43 @@ class NeteaseService {
     } catch (error) {
       console.error('Netease API health check failed:', error.message);
       return false;
+    }
+  }
+  
+  /**
+   * Checks if cookie is configured.
+   * @returns {boolean} True if cookie is set.
+   */
+  hasCookie() {
+    return this.cookie && this.cookie.length > 0;
+  }
+  
+  /**
+   * Gets login status information.
+   * @returns {Promise<Object|null>} Login status or null if not logged in.
+   */
+  async getLoginStatus() {
+    if (!this.hasCookie()) {
+      return null;
+    }
+    
+    try {
+      const config = this.getRequestConfig({});
+      const response = await axios.get(`${this.baseURL}/login/status`, config);
+      
+      if (response.data.code === 200 && response.data.data) {
+        return {
+          logged_in: true,
+          user_id: response.data.data.profile?.userId || null,
+          nickname: response.data.data.profile?.nickname || 'Unknown',
+          vip_type: response.data.data.profile?.vipType || 0
+        };
+      }
+      
+      return null;
+    } catch (error) {
+      console.error('Get login status error:', error.message);
+      return null;
     }
   }
 }

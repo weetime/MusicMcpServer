@@ -3,18 +3,21 @@
 ## 📋 Project Overview
 
 **Project Name**: MusicMcpServer  
-**Version**: 1.0.0  
+**Version**: 2.0.0  
 **Created**: 2025-11-04  
-**Purpose**: A dedicated music search and playback service using Netease Cloud Music API
+**Last Updated**: 2025-11-06  
+**Purpose**: A unified music search and playback service with integrated Netease Cloud Music API
 
 ## 🎯 Project Goals
 
 MusicMcpServer is a standalone music service that:
 - Provides seamless music search functionality
-- Enables online music playback
+- Enables full-length online music playback (not just previews)
 - Focuses exclusively on Netease Cloud Music integration
-- Offers a clean, modern web interface
-- Maintains simplicity and ease of deployment
+- Offers configurable audio quality levels
+- Provides a clean, modern web interface
+- Maintains simplicity with single-port deployment
+- Ensures ease of setup and maintenance
 
 ## 🏗️ Architecture
 
@@ -37,32 +40,38 @@ MusicMcpServer is a standalone music service that:
 ```
 ┌─────────────────────────────────────────────────────┐
 │              Browser Client                          │
-│  (HTML5 Interface + Audio Player)                   │
+│  (HTML5 Interface + Audio Player + Quality Selector)│
 └────────────────────┬────────────────────────────────┘
                      │
                      │ HTTP Requests
                      ↓
 ┌─────────────────────────────────────────────────────┐
-│        Express Server (MusicMcpServer)               │
-│  ├── Static File Serving (public/)                  │
-│  ├── /api/search - Music search                     │
-│  ├── /api/song-url/:id - Get playback URL           │
-│  └── /api/lyric/:id - Get lyrics                    │
+│    Express Server (Port 3000) - Single Process      │
+│  ┌─────────────────────────────────────────────┐   │
+│  │ Static File Serving (public/)                │   │
+│  │  ├── index.html (with quality selector)      │   │
+│  │  ├── app.js                                   │   │
+│  │  └── style.css                                │   │
+│  └─────────────────────────────────────────────┘   │
+│  ┌─────────────────────────────────────────────┐   │
+│  │ API Routes (/api/*)                          │   │
+│  │  ├── /api/search - Music search              │   │
+│  │  ├── /api/song-url/:id?level - Get URL       │   │
+│  │  └── /api/lyric/:id - Get lyrics             │   │
+│  └─────────────────────────────────────────────┘   │
+│  ┌─────────────────────────────────────────────┐   │
+│  │ Integrated Netease API (/netease/*)          │   │
+│  │  ├── /netease/cloudsearch - Search           │   │
+│  │  ├── /netease/song/url/v1 - Get song URL     │   │
+│  │  └── /netease/lyric - Get lyrics             │   │
+│  └─────────────────────────────────────────────┘   │
 └────────────────────┬────────────────────────────────┘
-                     │
-                     │ API Calls
-                     ↓
-┌─────────────────────────────────────────────────────┐
-│     NeteaseCloudMusicApi (Port 4000)                 │
-│  - Cloud Search                                      │
-│  - Song URL Retrieval                                │
-│  - Lyric Retrieval                                   │
-└─────────────────────────────────────────────────────┘
                      │
                      ↓
 ┌─────────────────────────────────────────────────────┐
 │         Netease Cloud Music CDN                      │
-│  - Audio Streaming                                   │
+│  - High-Quality Audio Streaming (up to Hi-Res)      │
+│  - Full Song Playback                                │
 │  - Album Artwork                                     │
 └─────────────────────────────────────────────────────┘
 ```
@@ -155,10 +164,13 @@ API route handlers.
 
 ### Music Playback
 - HTML5 Audio player
+- Full-length song playback (not limited to 30s)
+- Configurable audio quality (Standard to Hi-Res)
 - Play/pause controls
 - Progress bar with seek
 - Volume control
 - Album artwork display
+- Real-time quality indicator
 
 ### User Interface
 - Modern purple gradient design
@@ -214,13 +226,14 @@ Stream from Netease CDN
 ### Environment Variables
 
 ```bash
-# Netease API
-NETEASE_API_URL=http://localhost:4000
-NETEASE_API_PORT=4000
-
 # Server
 PORT=3000
 NODE_ENV=development
+
+# Netease API (optional - defaults to local integrated API)
+# NETEASE_API_URL=http://localhost:3000/netease
+# Or use external API if needed:
+# NETEASE_API_URL=https://netease-api.example.com
 ```
 
 ### NPM Scripts
@@ -228,9 +241,7 @@ NODE_ENV=development
 ```json
 {
   "start": "node server.js",
-  "dev": "nodemon server.js",
-  "start:netease": "PORT=4000 npx NeteaseCloudMusicApi",
-  "start:all": "concurrently \"npm run start:netease\" \"npm run dev\""
+  "dev": "nodemon server.js"
 }
 ```
 
@@ -238,15 +249,14 @@ NODE_ENV=development
 
 ### Local Development
 
-1. Start Netease API:
-   ```bash
-   npm run start:netease
-   ```
+Simply start the server (all services integrated):
+```bash
+npm start
+# Or for development with auto-reload:
+npm run dev
+```
 
-2. Start MusicMcpServer:
-   ```bash
-   npm run dev
-   ```
+All services (Web UI + API + Netease API) run on port 3000.
 
 ### Production (Vercel)
 
@@ -466,7 +476,22 @@ Format: `MAJOR.MINOR.PATCH`
 
 ---
 
-**Last Updated**: 2025-11-04  
-**Version**: 1.0.0  
+**Last Updated**: 2025-11-06  
+**Version**: 2.0.0  
 **Status**: ✅ Production Ready
+
+## 🆕 Version 2.0.0 Highlights
+
+### Key Improvements
+1. **Single Port Architecture**: All services integrated on port 3000
+2. **Audio Quality Selection**: Choose from 5 quality levels (Standard to Hi-Res)
+3. **Full Song Playback**: Complete songs, not just 30-second previews
+4. **Simplified Deployment**: One command to start everything
+5. **Better User Experience**: Quality indicator and configurable audio settings
+
+### Breaking Changes from v1.0.0
+- Netease API now integrated (no separate port 4000)
+- Removed `npm run start:all` and `npm run start:netease` commands
+- Default audio quality upgraded to "exhigh" (extremely high)
+- Simplified startup process
 

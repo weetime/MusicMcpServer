@@ -6,16 +6,17 @@
 // DOM Elements.
 const songInput = document.getElementById('songInput');
 const artistInput = document.getElementById('artistInput');
+const qualitySelect = document.getElementById('qualitySelect');
 const searchBtn = document.getElementById('searchBtn');
 const loadingIndicator = document.getElementById('loadingIndicator');
 const searchResults = document.getElementById('searchResults');
 const resultsList = document.getElementById('resultsList');
+const resultsCount = document.getElementById('resultsCount');
 const musicPlayer = document.getElementById('musicPlayer');
 const closePlayer = document.getElementById('closePlayer');
 const albumArt = document.getElementById('albumArt');
 const trackName = document.getElementById('trackName');
 const trackArtist = document.getElementById('trackArtist');
-const trackAlbum = document.getElementById('trackAlbum');
 const audioPlayer = document.getElementById('audioPlayer');
 const playPauseBtn = document.getElementById('playPauseBtn');
 const playPauseIcon = document.getElementById('playPauseIcon');
@@ -23,12 +24,19 @@ const progressBar = document.getElementById('progressBar');
 const currentTime = document.getElementById('currentTime');
 const duration = document.getElementById('duration');
 const volumeBar = document.getElementById('volumeBar');
-const loginLink = document.getElementById('loginLink');
-const registerLink = document.getElementById('registerLink');
 
 // Application state.
 let currentTrack = null;
 let isPlaying = false;
+
+// Quality level mapping for display.
+const qualityNames = {
+    'standard': 'Standard',
+    'higher': 'Higher',
+    'exhigh': 'Extremely High',
+    'lossless': 'Lossless',
+    'hires': 'Hi-Res'
+};
 
 /**
  * Initializes the application.
@@ -54,19 +62,10 @@ function init() {
     audioPlayer.addEventListener('ended', handleTrackEnd);
     audioPlayer.addEventListener('error', handleAudioError);
     
-    // Login/Register placeholders.
-    loginLink.addEventListener('click', (e) => {
-        e.preventDefault();
-        alert('用户登录功能即将推出！');
-    });
-    
-    registerLink.addEventListener('click', (e) => {
-        e.preventDefault();
-        alert('用户注册功能即将推出！');
-    });
-    
     // Set initial volume.
-    audioPlayer.volume = volumeBar.value / 100;
+    const initialVolume = volumeBar.value / 100;
+    audioPlayer.volume = initialVolume;
+    updateVolumeIcon(initialVolume);
 }
 
 /**
@@ -78,7 +77,7 @@ async function handleSearch() {
     const artist = artistInput.value.trim();
     
     if (!song) {
-        alert('请输入歌曲名称！');
+        alert('Please enter a song name!');
         return;
     }
     
@@ -108,12 +107,12 @@ async function handleSearch() {
         if (data.success && data.results.tracks && data.results.tracks.items.length > 0) {
             displayResults(data.results.tracks.items);
         } else {
-            alert('未找到相关歌曲，请尝试其他关键词');
+            alert('No songs found. Please try different keywords.');
             hideLoading();
         }
     } catch (error) {
         console.error('Search error:', error);
-        alert('搜索出错：' + error.message);
+        alert('Search error: ' + error.message);
         hideLoading();
     }
 }
@@ -126,8 +125,14 @@ function displayResults(tracks) {
     
     resultsList.innerHTML = '';
     
-    tracks.forEach(track => {
-        const resultItem = createResultItem(track);
+    // Update results count.
+    const resultsCount = document.getElementById('resultsCount');
+    if (resultsCount) {
+        resultsCount.textContent = `${tracks.length} result${tracks.length !== 1 ? 's' : ''}`;
+    }
+    
+    tracks.forEach((track, index) => {
+        const resultItem = createResultItem(track, index);
         resultsList.appendChild(resultItem);
     });
     
@@ -135,64 +140,56 @@ function displayResults(tracks) {
 }
 
 /**
- * Creates a result item element.
+ * Creates a result card element in the new card style.
  * Uses DOM API instead of innerHTML to prevent XSS vulnerabilities.
  */
-function createResultItem(track) {
-    const div = document.createElement('div');
-    div.className = 'result-item';
-    div.onclick = () => playTrack(track);
+function createResultItem(track, index) {
+    // Create card container.
+    const card = document.createElement('div');
+    card.className = 'result-card';
+    
+    // Create album art wrapper.
+    const artWrapper = document.createElement('div');
+    artWrapper.className = 'album-art-wrapper';
     
     // Create album art image.
     const img = document.createElement('img');
-    img.className = 'result-album-art';
-    img.src = track.album.images[0]?.url || 'https://via.placeholder.com/80';
+    img.className = 'album-art';
+    img.src = track.album.images[0]?.url || 'https://via.placeholder.com/300';
     img.alt = track.name;
     
-    // Create result info container.
-    const resultInfo = document.createElement('div');
-    resultInfo.className = 'result-info';
+    // Create play button overlay.
+    const playButton = document.createElement('button');
+    playButton.className = 'play-button';
+    playButton.innerHTML = '▶';
+    playButton.onclick = (e) => {
+        e.stopPropagation();
+        playTrack(track);
+    };
     
-    // Create track name.
-    const resultName = document.createElement('div');
-    resultName.className = 'result-name';
-    resultName.textContent = track.name;
+    // Assemble album art wrapper.
+    artWrapper.appendChild(img);
+    artWrapper.appendChild(playButton);
     
-    // Create artist names.
-    const resultArtist = document.createElement('div');
-    resultArtist.className = 'result-artist';
-    resultArtist.textContent = track.artists.map(a => a.name).join(', ');
+    // Create album title background (with color variation).
+    const titleBg = document.createElement('div');
+    titleBg.className = `album-title-bg color-${(index % 6) + 1}`;
+    titleBg.textContent = track.name;
     
-    // Create album info with preview warning.
-    const resultAlbum = document.createElement('div');
-    resultAlbum.className = 'result-album';
-    resultAlbum.textContent = track.album.name;
+    // Create artist name.
+    const artistName = document.createElement('div');
+    artistName.className = 'artist-name';
+    artistName.textContent = track.artists.map(a => a.name).join(', ');
     
-    // Add preview warning if needed.
-    if (!track.preview_url) {
-        const warning = document.createElement('span');
-        warning.style.color = '#e53e3e';
-        warning.style.fontSize = '12px';
-        warning.textContent = ' ⚠️ 无预览';
-        resultAlbum.appendChild(warning);
-    }
+    // Assemble card.
+    card.appendChild(artWrapper);
+    card.appendChild(titleBg);
+    card.appendChild(artistName);
     
-    // Assemble result info.
-    resultInfo.appendChild(resultName);
-    resultInfo.appendChild(resultArtist);
-    resultInfo.appendChild(resultAlbum);
+    // Make entire card clickable.
+    card.onclick = () => playTrack(track);
     
-    // Create play icon.
-    const playIcon = document.createElement('div');
-    playIcon.className = 'play-icon';
-    playIcon.textContent = '▶️';
-    
-    // Assemble result item.
-    div.appendChild(img);
-    div.appendChild(resultInfo);
-    div.appendChild(playIcon);
-    
-    return div;
+    return card;
 }
 
 /**
@@ -201,22 +198,20 @@ function createResultItem(track) {
  */
 async function playTrack(track) {
     if (!track.preview_url) {
-        alert('抱歉，该歌曲暂无预览音频！\n\n无法获取播放链接。');
+        alert('Sorry, this song has no preview audio available.\n\nUnable to get playback URL.');
         return;
     }
     
     currentTrack = track;
     
     // Update player UI using safe DOM properties.
-    albumArt.src = track.album.images[0]?.url || 'https://via.placeholder.com/200';
+    albumArt.src = track.album.images[0]?.url || 'https://via.placeholder.com/56';
     albumArt.alt = track.name;
     trackName.textContent = track.name;
     trackArtist.textContent = track.artists.map(a => a.name).join(', ');
-    trackAlbum.textContent = track.album.name;
     
-    // Show player first for better UX.
+    // Show fixed bottom player.
     musicPlayer.classList.remove('hidden');
-    musicPlayer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     
     try {
         let audioUrl;
@@ -225,16 +220,21 @@ async function playTrack(track) {
         if (track.preview_url.startsWith('netease:')) {
             const songId = track.preview_url.replace('netease:', '');
             
-            // Fetch the actual playback URL from API.
-            const response = await fetch(`/api/song-url/${songId}`);
+            // Get selected quality level.
+            const quality = qualitySelect.value;
+            
+            // Fetch the actual playback URL from API with selected quality.
+            const response = await fetch(`/api/song-url/${songId}?level=${quality}`);
             const data = await response.json();
             
             if (!data.success || !data.url) {
-                alert('抱歉，该歌曲暂无可用音频！\n\n可能是版权限制或歌曲已下架。');
+                alert('Sorry, this song has no available audio.\n\nMay be due to copyright restrictions or the song has been removed.\nYou can try switching to a lower quality level.');
                 return;
             }
             
             audioUrl = data.url;
+            
+            // Quality info is no longer displayed in the fixed player.
         } else {
             // Spotify or other source with direct URL.
             audioUrl = track.preview_url;
@@ -248,8 +248,8 @@ async function playTrack(track) {
         isPlaying = true;
         updatePlayPauseIcon();
     } catch (error) {
-        console.error('播放失败:', error);
-        alert('播放失败，请稍后重试！\n\n' + error.message);
+        console.error('Playback error:', error);
+        alert('Playback failed. Please try again later.\n\n' + error.message);
     }
 }
 
@@ -274,7 +274,7 @@ function togglePlayPause() {
  * Updates play/pause button icon.
  */
 function updatePlayPauseIcon() {
-    playPauseIcon.textContent = isPlaying ? '⏸️' : '▶️';
+    playPauseIcon.textContent = isPlaying ? '⏸' : '▶';
 }
 
 /**
@@ -289,7 +289,41 @@ function handleProgressChange() {
  * Handles volume bar change.
  */
 function handleVolumeChange() {
-    audioPlayer.volume = volumeBar.value / 100;
+    const volume = volumeBar.value / 100;
+    audioPlayer.volume = volume;
+    updateVolumeIcon(volume);
+}
+
+/**
+ * Updates volume icon based on volume level.
+ */
+function updateVolumeIcon(volume) {
+    const volumeIcon = document.getElementById('volumeIcon');
+    if (!volumeIcon) return;
+    
+    // Clear existing paths
+    volumeIcon.innerHTML = '';
+    
+    if (volume === 0) {
+        // Muted icon
+        volumeIcon.innerHTML = `
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <line x1="23" y1="9" x2="17" y2="15"></line>
+            <line x1="17" y1="9" x2="23" y2="15"></line>
+        `;
+    } else if (volume < 0.5) {
+        // Low volume icon
+        volumeIcon.innerHTML = `
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+        `;
+    } else {
+        // High volume icon
+        volumeIcon.innerHTML = `
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+        `;
+    }
 }
 
 /**
@@ -327,7 +361,7 @@ function handleTrackEnd() {
  */
 function handleAudioError() {
     console.error('Audio playback error');
-    alert('音频加载失败，请尝试其他歌曲');
+    alert('Audio loading failed. Please try another song.');
     isPlaying = false;
     updatePlayPauseIcon();
 }

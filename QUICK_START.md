@@ -1,6 +1,6 @@
 # 🚀 MusicMcpServer - Quick Start Guide
 
-## ⚡ 1-Minute Setup
+## ⚡ 30-Second Setup
 
 ### Step 1: Install Dependencies
 ```bash
@@ -8,28 +8,18 @@ cd /Users/fangyong/agent/MusicMcpServer
 npm install
 ```
 
-### Step 2: Start Services
-
-**Option A - One Command (Recommended)**:
+### Step 2: Start Server (Single Command!)
 ```bash
-npm run start:all
-```
-
-**Option B - Separate Terminals**:
-
-Terminal 1 - Start Netease API:
-```bash
-npm run start:netease
-```
-
-Terminal 2 - Start MusicMcpServer:
-```bash
+npm start
+# Or for development with auto-reload:
 npm run dev
 ```
 
 ### Step 3: Open Browser
 
 Visit: **http://localhost:3000/**
+
+🎉 **That's it!** All services (Web UI + API + Netease API) run on one port!
 
 ---
 
@@ -47,10 +37,11 @@ Visit: **http://localhost:3000/**
 
 ## 📊 Project Status
 
-✅ **NEW PROJECT**: MusicMcpServer  
-✅ **SOURCE**: Migrated from MusicCore  
-✅ **FOCUS**: Netease Cloud Music only  
-✅ **STATUS**: Ready to use
+✅ **PROJECT**: MusicMcpServer v2.0  
+✅ **SINGLE PORT**: All services on port 3000  
+✅ **AUDIO QUALITY**: Configurable quality levels  
+✅ **FULL SONGS**: Not just 30s previews  
+✅ **STATUS**: Production ready
 
 ---
 
@@ -79,33 +70,43 @@ Visit: **http://localhost:3000/**
 
 ---
 
+## 🎵 New Features
+
+1. **🎚️ Audio Quality Selection**: Choose from Standard to Hi-Res quality
+2. **🔊 Full Song Playback**: Complete songs, not just 30s previews
+3. **⚡ Single Port**: Everything runs on port 3000
+4. **🚀 Simpler Deployment**: One command to start
+
 ## ⚠️ Notes
 
-1. **Netease API Required**: Port 4000 must be available
-2. **Copyright**: Some songs may be unavailable
+1. **Copyright**: Some songs may be unavailable due to licensing
+2. **Quality**: Higher quality requires good internet connection
 3. **Unofficial API**: For educational use only
 
 ---
 
 ## 🆘 Quick Troubleshooting
 
-### Can't start Netease API?
-```bash
-# Check if port 4000 is in use
-lsof -i :4000
-
-# Use different port
-PORT=5000 npx NeteaseCloudMusicApi
-```
-
 ### Can't access localhost:3000?
 ```bash
 # Check if port 3000 is in use
 lsof -i :3000
 
+# Kill the process
+kill -9 <PID>
+
 # Or change port in .env
 PORT=8080
 ```
+
+### Songs won't play?
+- Try a lower quality level (Standard or Higher)
+- Check internet connection
+- Some songs may have copyright restrictions
+
+### Audio cuts off at 30 seconds?
+- Switch to "极高音质" (Extremely High) or higher
+- Make sure you're using the latest version
 
 ---
 
