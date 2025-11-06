@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎵 音乐搜索 - MusicCore</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="title">
+                <span class="music-icon">♪</span> 音乐搜索
+            </h1>
+            <p class="subtitle">搜索并播放您喜爱的音乐</p>
+        </header>
+
+        <!-- Search Form -->
+        <div class="search-section">
+            <div class="search-form">
+                <input 
+                    type="text" 
+                    id="songInput" 
+                    class="search-input" 
+                    placeholder="输入歌曲名称..."
+                    autocomplete="off"
+                >
+                <input 
+                    type="text" 
+                    id="artistInput" 
+                    class="search-input artist-input" 
+                    placeholder="歌手名称 (可选)"
+                    autocomplete="off"
+                >
+                <button id="searchBtn" class="search-btn">
+                    <span class="search-icon">🔍</span> 搜索
+                </button>
+            </div>
+        </div>
+
+        <!-- System Info -->
+        <div class="system-info">
+            <div class="info-icon">ⓘ</div>
+            <h3 class="info-title">系统信息</h3>
+            <p class="info-text">音乐MCP服务器 | 支持在线音乐搜索和播放</p>
+            <p class="info-subtext">基于网易云音乐API，海量中文歌曲</p>
+            <p class="info-notice">⚠️ 部分歌曲可能因版权限制无法播放</p>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div id="loadingIndicator" class="loading-indicator hidden">
+            <div class="spinner"></div>
+            <p>正在搜索音乐...</p>
+        </div>
+
+        <!-- Search Results -->
+        <div id="searchResults" class="search-results hidden">
+            <h2 class="results-title">搜索结果</h2>
+            <div id="resultsList" class="results-list"></div>
+        </div>
+
+        <!-- Music Player -->
+        <div id="musicPlayer" class="music-player hidden">
+            <div class="player-header">
+                <h3 class="player-title">正在播放</h3>
+                <button id="closePlayer" class="close-btn">✕</button>
+            </div>
+            
+            <div class="player-content">
+                <div class="album-art-container">
+                    <img id="albumArt" src="" alt="Album Art" class="album-art">
+                </div>
+                
+                <div class="track-info">
+                    <h4 id="trackName" class="track-name">歌曲名称</h4>
+                    <p id="trackArtist" class="track-artist">歌手</p>
+                    <p id="trackAlbum" class="track-album">专辑</p>
+                </div>
+                
+                <audio id="audioPlayer" preload="metadata"></audio>
+                
+                <div class="player-controls">
+                    <div class="progress-container">
+                        <span id="currentTime" class="time">0:00</span>
+                        <input 
+                            type="range" 
+                            id="progressBar" 
+                            class="progress-bar" 
+                            min="0" 
+                            max="100" 
+                            value="0"
+                        >
+                        <span id="duration" class="time">0:00</span>
+                    </div>
+                    
+                    <div class="control-buttons">
+                        <button id="playPauseBtn" class="control-btn play-btn">
+                            <span id="playPauseIcon">▶️</span>
+                        </button>
+                    </div>
+                    
+                    <div class="volume-container">
+                        <span class="volume-icon">🔊</span>
+                        <input 
+                            type="range" 
+                            id="volumeBar" 
+                            class="volume-bar" 
+                            min="0" 
+                            max="100" 
+                            value="70"
+                        >
+                    </div>
+                </div>
+                
+                <div class="preview-notice">
+                    ℹ️ 音频来源：网易云音乐 CDN
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p class="footer-links">
+                <a href="#" id="loginLink">用户登录</a> | 
+                <a href="#" id="registerLink">用户注册</a>
+            </p>
+            <p class="footer-copyright">© 2024 MusicMcpServer</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
+
