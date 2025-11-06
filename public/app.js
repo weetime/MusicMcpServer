@@ -27,9 +27,15 @@ const volumeBar = document.getElementById('volumeBar');
 const searchHistory = document.getElementById('searchHistory');
 const searchHistoryList = document.getElementById('searchHistoryList');
 const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+const queueBtn = document.getElementById('queueBtn');
+const playlistDropdown = document.getElementById('playlistDropdown');
+const playlistList = document.getElementById('playlistList');
+const playlistCount = document.getElementById('playlistCount');
 
 // Application state.
 let currentTrack = null;
+let currentTrackIndex = -1; // Index of current track in playlist.
+let playlist = []; // Playlist array to store search results.
 let isPlaying = false;
 const MAX_HISTORY_ITEMS = 10; // Maximum number of search history items to display.
 
@@ -78,6 +84,26 @@ function init() {
     progressBar.addEventListener('input', handleProgressChange);
     volumeBar.addEventListener('input', handleVolumeChange);
     
+    // Previous and Next button events.
+    const prevBtn = document.querySelector('.prev-btn');
+    const nextBtn = document.querySelector('.next-btn');
+    if (prevBtn) {
+        prevBtn.addEventListener('click', playPreviousTrack);
+    }
+    if (nextBtn) {
+        nextBtn.addEventListener('click', playNextTrack);
+    }
+    
+    // Queue/Playlist button events.
+    queueBtn.addEventListener('click', togglePlaylist);
+    
+    // Hide playlist when clicking outside.
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.player-right')) {
+            playlistDropdown.classList.add('hidden');
+        }
+    });
+    
     // Audio player events.
     audioPlayer.addEventListener('timeupdate', updateProgress);
     audioPlayer.addEventListener('loadedmetadata', updateDuration);
@@ -121,7 +147,7 @@ async function handleSearch() {
     // Show loading state.
     showLoading();
     hideResults();
-    hidePlayer();
+    // Don't hide player - keep it visible if playing
     
     try {
         // Search via Netease Cloud Music API.
@@ -156,6 +182,9 @@ function displayResults(tracks) {
     
     resultsList.innerHTML = '';
     
+    // Update playlist with new search results.
+    playlist = tracks;
+    
     // Update results count.
     const resultsCount = document.getElementById('resultsCount');
     if (resultsCount) {
@@ -168,6 +197,9 @@ function displayResults(tracks) {
     });
     
     searchResults.classList.remove('hidden');
+    
+    // Update playlist display.
+    renderPlaylist();
 }
 
 /**
@@ -189,6 +221,15 @@ function createResultItem(track, index) {
     img.src = track.album.images[0]?.url || 'https://via.placeholder.com/300';
     img.alt = track.name;
     
+    // Create overlay for hover effects.
+    const overlay = document.createElement('div');
+    overlay.className = 'album-art-overlay';
+    
+    // Create artist name (will be shown in overlay).
+    const artistName = document.createElement('div');
+    artistName.className = 'artist-name-overlay';
+    artistName.textContent = track.artists.map(a => a.name).join(', ');
+    
     // Create play button overlay.
     const playButton = document.createElement('button');
     playButton.className = 'play-button';
@@ -198,24 +239,22 @@ function createResultItem(track, index) {
         playTrack(track);
     };
     
+    // Assemble overlay.
+    overlay.appendChild(artistName);
+    overlay.appendChild(playButton);
+    
     // Assemble album art wrapper.
     artWrapper.appendChild(img);
-    artWrapper.appendChild(playButton);
+    artWrapper.appendChild(overlay);
     
     // Create album title background (with color variation).
     const titleBg = document.createElement('div');
     titleBg.className = `album-title-bg color-${(index % 6) + 1}`;
     titleBg.textContent = track.name;
     
-    // Create artist name.
-    const artistName = document.createElement('div');
-    artistName.className = 'artist-name';
-    artistName.textContent = track.artists.map(a => a.name).join(', ');
-    
     // Assemble card.
     card.appendChild(artWrapper);
     card.appendChild(titleBg);
-    card.appendChild(artistName);
     
     // Make entire card clickable.
     card.onclick = () => playTrack(track);
@@ -233,6 +272,15 @@ async function playTrack(track) {
         return;
     }
     
+    // Find track index in playlist.
+    currentTrackIndex = playlist.findIndex(t => t.id === track.id);
+    if (currentTrackIndex === -1) {
+        // If track not found in playlist, add it and set index.
+        playlist.push(track);
+        currentTrackIndex = playlist.length - 1;
+        renderPlaylist();
+    }
+    
     currentTrack = track;
     
     // Update player UI using safe DOM properties.
@@ -243,6 +291,9 @@ async function playTrack(track) {
     
     // Show fixed bottom player.
     musicPlayer.classList.remove('hidden');
+    
+    // Update playlist display.
+    renderPlaylist();
     
     try {
         let audioUrl;
@@ -379,12 +430,18 @@ function updateDuration() {
 
 /**
  * Handles track end.
+ * Automatically plays next track if available.
  */
 function handleTrackEnd() {
     isPlaying = false;
     updatePlayPauseIcon();
     progressBar.value = 0;
     currentTime.textContent = '0:00';
+    
+    // Auto-play next track if available.
+    if (playlist.length > 0 && currentTrackIndex >= 0) {
+        playNextTrack();
+    }
 }
 
 /**
@@ -406,6 +463,7 @@ function closePlayerPanel() {
     musicPlayer.classList.add('hidden');
     isPlaying = false;
     currentTrack = null;
+    currentTrackIndex = -1;
 }
 
 /**
@@ -603,6 +661,176 @@ function selectHistoryItem(query) {
     
     hideSearchHistory();
     handleSearch();
+}
+
+/**
+ * Playlist Management Functions.
+ */
+
+/**
+ * Renders the playlist dropdown.
+ */
+function renderPlaylist() {
+    playlistList.innerHTML = '';
+    
+    if (playlist.length === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'playlist-empty';
+        empty.textContent = '播放列表为空';
+        playlistList.appendChild(empty);
+        playlistCount.textContent = '0 首';
+        return;
+    }
+    
+    playlistCount.textContent = `${playlist.length} 首`;
+    
+    playlist.forEach((track, index) => {
+        const item = document.createElement('div');
+        item.className = 'playlist-item';
+        if (index === currentTrackIndex) {
+            item.classList.add('active');
+        }
+        
+        const albumArt = document.createElement('img');
+        albumArt.className = 'playlist-item-art';
+        albumArt.src = track.album.images[0]?.url || 'https://via.placeholder.com/50';
+        albumArt.alt = track.name;
+        
+        const info = document.createElement('div');
+        info.className = 'playlist-item-info';
+        
+        const name = document.createElement('div');
+        name.className = 'playlist-item-name';
+        name.textContent = track.name;
+        
+        const artist = document.createElement('div');
+        artist.className = 'playlist-item-artist';
+        artist.textContent = track.artists.map(a => a.name).join(', ');
+        
+        info.appendChild(name);
+        info.appendChild(artist);
+        
+        // Create delete button
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'playlist-item-delete';
+        deleteBtn.setAttribute('title', '删除');
+        deleteBtn.innerHTML = `
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        `;
+        deleteBtn.onclick = (e) => {
+            e.stopPropagation();
+            deleteFromPlaylist(index);
+        };
+        
+        item.appendChild(albumArt);
+        item.appendChild(info);
+        item.appendChild(deleteBtn);
+        
+        item.onclick = () => {
+            playTrack(track);
+            renderPlaylist();
+        };
+        
+        playlistList.appendChild(item);
+    });
+}
+
+/**
+ * Toggles the playlist dropdown.
+ */
+function togglePlaylist() {
+    playlistDropdown.classList.toggle('hidden');
+    if (!playlistDropdown.classList.contains('hidden')) {
+        renderPlaylist();
+    }
+}
+
+/**
+ * Plays the previous track in the playlist.
+ */
+function playPreviousTrack() {
+    if (playlist.length === 0) return;
+    
+    if (currentTrackIndex <= 0) {
+        // If at the beginning, loop to the end.
+        currentTrackIndex = playlist.length - 1;
+    } else {
+        currentTrackIndex--;
+    }
+    
+    const track = playlist[currentTrackIndex];
+    if (track) {
+        playTrack(track);
+        renderPlaylist();
+    }
+}
+
+/**
+ * Plays the next track in the playlist.
+ */
+function playNextTrack() {
+    if (playlist.length === 0) return;
+    
+    if (currentTrackIndex >= playlist.length - 1) {
+        // If at the end, loop to the beginning.
+        currentTrackIndex = 0;
+    } else {
+        currentTrackIndex++;
+    }
+    
+    const track = playlist[currentTrackIndex];
+    if (track) {
+        playTrack(track);
+        renderPlaylist();
+    }
+}
+
+/**
+ * Deletes a track from the playlist.
+ * @param {number} index - Index of the track to delete.
+ */
+function deleteFromPlaylist(index) {
+    if (index < 0 || index >= playlist.length) return;
+    
+    // If deleting the currently playing track, stop playback
+    if (index === currentTrackIndex) {
+        audioPlayer.pause();
+        audioPlayer.src = '';
+        isPlaying = false;
+        updatePlayPauseIcon();
+        currentTrack = null;
+        
+        // If there are more tracks, play the next one (or previous if at end)
+        if (playlist.length > 1) {
+            if (index < playlist.length - 1) {
+                // Play the next track (which will now be at the same index)
+                currentTrackIndex = index;
+            } else {
+                // Play the previous track (now at index - 1)
+                currentTrackIndex = index - 1;
+            }
+            const nextTrack = playlist[currentTrackIndex];
+            if (nextTrack) {
+                playTrack(nextTrack);
+            }
+        } else {
+            // No more tracks, hide player
+            currentTrackIndex = -1;
+            musicPlayer.classList.add('hidden');
+        }
+    } else if (index < currentTrackIndex) {
+        // If deleting a track before the current one, adjust current index
+        currentTrackIndex--;
+    }
+    
+    // Remove track from playlist
+    playlist.splice(index, 1);
+    
+    // Update playlist display
+    renderPlaylist();
 }
 
 /**
