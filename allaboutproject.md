@@ -3,10 +3,10 @@
 ## 📋 Project Overview
 
 **Project Name**: MusicMcpServer  
-**Version**: 2.0.0  
+**Version**: 2.1.0  
 **Created**: 2025-11-04  
-**Last Updated**: 2025-11-06  
-**Purpose**: A unified music search and playback service with integrated Netease Cloud Music API
+**Last Updated**: 2025-01-XX  
+**Purpose**: A unified music search and playback service with independent Netease Cloud Music API service
 
 ## 🎯 Project Goals
 
@@ -27,7 +27,7 @@ MusicMcpServer is a standalone music service that:
 - Node.js - Runtime environment
 - Express.js - Web framework
 - Axios - HTTP client
-- NeteaseCloudMusicApi - Music API integration
+- Netease Service (Independent) - Standalone Netease API service
 
 **Frontend**:
 - HTML5 - Semantic markup
@@ -46,7 +46,7 @@ MusicMcpServer is a standalone music service that:
                      │ HTTP Requests
                      ↓
 ┌─────────────────────────────────────────────────────┐
-│    Express Server (Port 3000) - Single Process      │
+│    Express Server (Port 3000)                       │
 │  ┌─────────────────────────────────────────────┐   │
 │  │ Static File Serving (public/)                │   │
 │  │  ├── index.html (with quality selector)      │   │
@@ -60,10 +60,23 @@ MusicMcpServer is a standalone music service that:
 │  │  └── /api/lyric/:id - Get lyrics             │   │
 │  └─────────────────────────────────────────────┘   │
 │  ┌─────────────────────────────────────────────┐   │
-│  │ Integrated Netease API (/netease/*)          │   │
-│  │  ├── /netease/cloudsearch - Search           │   │
-│  │  ├── /netease/song/url/v1 - Get song URL     │   │
-│  │  └── /netease/lyric - Get lyrics             │   │
+│  │ HTTP Client (services/netease.js)            │   │
+│  │  Calls external Netease service via HTTP      │   │
+│  └─────────────────────────────────────────────┘   │
+└────────────────────┬────────────────────────────────┘
+                     │
+                     │ HTTP Requests
+                     ↓
+┌─────────────────────────────────────────────────────┐
+│    Netease Service (Port 4000) - Independent         │
+│  ┌─────────────────────────────────────────────┐   │
+│  │ Express Server                               │   │
+│  │  ├── /cloudsearch - Search                   │   │
+│  │  ├── /song/url/v1 - Get song URL             │   │
+│  │  └── /lyric - Get lyrics                     │   │
+│  └─────────────────────────────────────────────┘   │
+│  ┌─────────────────────────────────────────────┐   │
+│  │ NeteaseCloudMusicApi                         │   │
 │  └─────────────────────────────────────────────┘   │
 └────────────────────┬────────────────────────────────┘
                      │
@@ -90,11 +103,16 @@ MusicMcpServer/
 ├── routes/
 │   └── search.js          # API route handlers
 ├── services/
-│   └── netease.js         # Netease service integration
+│   └── netease.js         # Netease HTTP client (calls external service)
 ├── public/                # Frontend static files
 │   ├── index.html         # Web interface
 │   ├── style.css          # Styling
 │   └── app.js             # Frontend logic
+├── netease/               # Independent Netease API service
+│   ├── server.js          # Netease service entry point
+│   ├── package.json       # Netease service dependencies
+│   ├── README.md          # Netease service documentation
+│   └── .env.example       # Netease service configuration
 └── ai-docs/               # Development documentation
 ```
 
@@ -116,15 +134,19 @@ Main application entry point.
 - `GET /api/*` - API routes
 
 ### services/netease.js
-Netease Cloud Music API integration.
+Netease Cloud Music API HTTP client.
 
 **Class**: `NeteaseService`
 
+**Description**: HTTP client that calls the independent Netease API service.
+
 **Methods**:
-- `search(keywords, limit)` - Search for songs
-- `getSongUrl(id, level)` - Get playback URL
-- `getLyric(id)` - Get song lyrics
-- `checkHealth()` - Check API availability
+- `search(keywords, limit)` - Search for songs (calls external service)
+- `getSongUrl(id, level)` - Get playback URL (calls external service)
+- `getLyric(id)` - Get song lyrics (calls external service)
+- `checkHealth()` - Check if Netease API service is available
+- `hasCookie()` - Check if cookie is configured
+- `getLoginStatus()` - Get login status from Netease service
 
 ### routes/search.js
 API route handlers.
@@ -225,15 +247,26 @@ Stream from Netease CDN
 
 ### Environment Variables
 
+**Main Project**:
 ```bash
 # Server
 PORT=3000
 NODE_ENV=development
 
-# Netease API (optional - defaults to local integrated API)
-# NETEASE_API_URL=http://localhost:3000/netease
-# Or use external API if needed:
-# NETEASE_API_URL=https://netease-api.example.com
+# Netease API Service URL (required)
+NETEASE_API_URL=http://localhost:4000
+# For production:
+# NETEASE_API_URL=https://netease-api.vercel.app
+```
+
+**Netease Service** (`netease/.env`):
+```bash
+# Server
+PORT=4000
+NODE_ENV=development
+
+# Netease Cookie (optional, for VIP features)
+NETEASE_COOKIE=your_cookie_here
 ```
 
 ### NPM Scripts
@@ -249,21 +282,40 @@ NODE_ENV=development
 
 ### Local Development
 
-Simply start the server (all services integrated):
-```bash
-npm start
-# Or for development with auto-reload:
-npm run dev
-```
+1. **Start Netease Service** (in separate terminal):
+   ```bash
+   cd netease
+   npm install
+   npm start
+   ```
+   Netease service runs on port 4000.
 
-All services (Web UI + API + Netease API) run on port 3000.
+2. **Start Main Server**:
+   ```bash
+   npm install
+   npm start
+   # Or for development with auto-reload:
+   npm run dev
+   ```
+   Main server runs on port 3000.
+
+**Note**: Both services must be running for the application to work.
 
 ### Production (Vercel)
 
-1. Set environment variables:
-   - `NETEASE_API_URL=https://netease-api.vercel.app`
+1. **Deploy Netease Service**:
+   - Deploy `netease/` folder as separate Vercel project
+   - Set environment variables in Vercel dashboard:
+     - `PORT=4000` (or let Vercel assign)
+     - `NETEASE_COOKIE` (optional)
 
-2. Deploy:
+2. **Deploy Main Project**:
+   - Deploy main project to Vercel
+   - Set environment variables:
+     - `NETEASE_API_URL=https://your-netease-service.vercel.app`
+     - `PORT=3000` (or let Vercel assign)
+
+3. **Deploy**:
    ```bash
    git push
    ```
@@ -360,9 +412,10 @@ Vercel auto-deploys on push.
 ### Common Issues
 
 **Netease API Not Starting**:
-- Check port 4000 availability
-- Verify NeteaseCloudMusicApi installation
-- Check network connectivity
+- Check if Netease service is running (port 4000)
+- Verify NeteaseCloudMusicApi installation in `netease/` folder
+- Check `NETEASE_API_URL` environment variable
+- Verify network connectivity between services
 
 **Songs Won't Play**:
 - Copyright restrictions
@@ -379,10 +432,15 @@ Vercel auto-deploys on push.
 
 ### Runtime Dependencies
 
+**Main Project**:
 - `express` (^4.18.2) - Web framework
 - `axios` (^1.6.2) - HTTP client
 - `dotenv` (^16.3.1) - Environment variables
 - `cors` (^2.8.5) - CORS middleware
+
+**Netease Service** (`netease/package.json`):
+- `express` (^4.18.2) - Web framework
+- `dotenv` (^16.3.1) - Environment variables
 - `NeteaseCloudMusicApi` (^4.15.0) - Music API
 
 ### Development Dependencies
@@ -476,9 +534,23 @@ Format: `MAJOR.MINOR.PATCH`
 
 ---
 
-**Last Updated**: 2025-11-06  
-**Version**: 2.0.0  
+**Last Updated**: 2025-01-XX  
+**Version**: 2.1.0  
 **Status**: ✅ Production Ready
+
+## 🆕 Version 2.1.0 Highlights
+
+### Key Improvements
+1. **Independent Netease Service**: Netease API service separated into standalone project
+2. **Vercel Compatible**: No subprocess execution, compatible with Vercel deployment
+3. **Better Separation**: Clear separation between main project and Netease service
+4. **Independent Deployment**: Each service can be deployed and scaled independently
+
+### Breaking Changes from v2.0.0
+- Netease service now runs as independent project (see `netease/` folder)
+- Removed `NeteaseCloudMusicApi` dependency from main project
+- Requires both services to be running
+- `NETEASE_API_URL` environment variable is now required
 
 ## 🆕 Version 2.0.0 Highlights
 

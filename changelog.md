@@ -2,6 +2,112 @@
 
 All notable changes to MusicMcpServer project will be documented in this file.
 
+## [2.1.0] - 2025-01-XX
+
+### 🚀 Major Update: Netease Service Separation
+
+This update separates the Netease API service into an independent project to support Vercel deployment (which doesn't support subprocesses).
+
+### 🎯 Key Improvements
+
+#### 1. **Independent Netease Service** 🔄
+- **BREAKING**: Netease API service moved to separate `netease/` folder
+- Netease service runs as independent project
+- Main project now calls Netease service via HTTP
+- Removed subprocess execution (exec/child_process)
+- Compatible with Vercel deployment restrictions
+
+#### 2. **Project Structure** 📁
+- Created `netease/` folder with standalone service
+- Independent `package.json` for Netease service
+- Independent server.js for Netease API
+- Main project no longer includes NeteaseCloudMusicApi dependency
+
+### Added
+
+- **Netease Service** (`netease/` folder):
+  - Standalone Express server for Netease API
+  - Independent package.json with NeteaseCloudMusicApi dependency
+  - README.md with deployment instructions
+  - .env.example for configuration
+
+### Changed
+
+- **Server Architecture**:
+  - Removed subprocess execution from main server.js
+  - Removed NeteaseCloudMusicApi dependency from main project
+  - Main project now uses HTTP client to call Netease service
+  - Updated services/netease.js to clarify it calls external service
+
+- **Dependencies**:
+  - Removed `NeteaseCloudMusicApi` from main project's package.json
+  - NeteaseCloudMusicApi now only in netease/package.json
+
+- **Health Check**:
+  - Added Netease API health status check
+  - Shows Netease API URL and connection status
+
+### Removed
+
+- Subprocess execution (exec/child_process)
+- NeteaseCloudMusicApi dependency from main project
+- Internal Netease API startup code
+- Process management code (SIGTERM/SIGINT handlers for Netease process)
+
+### Technical Details
+
+#### Architecture Changes
+
+**Before**:
+```
+Main Project (Port 3000)
+    ├── Express Server
+    └── NeteaseCloudMusicApi (subprocess on Port 4000)
+```
+
+**After**:
+```
+Main Project (Port 3000)
+    └── Express Server
+        └── HTTP Client → Netease Service (Port 4000)
+            └── Netease Service (Independent Project)
+                └── NeteaseCloudMusicApi
+```
+
+#### Migration Guide
+
+1. **Start Netease Service**:
+   ```bash
+   cd netease
+   npm install
+   npm start
+   ```
+
+2. **Start Main Project**:
+   ```bash
+   npm install
+   npm start
+   ```
+
+3. **Environment Variables**:
+   - Main project: `NETEASE_API_URL` (default: `http://localhost:4000`)
+   - Netease service: `PORT` (default: 4000), `NETEASE_COOKIE` (optional)
+
+### Deployment
+
+- **Vercel**: Deploy Netease service separately, then set `NETEASE_API_URL` in main project
+- **Local**: Run both services independently
+- **Docker**: Can containerize each service separately
+
+### Notes
+
+- ✅ Vercel-compatible (no subprocesses)
+- ✅ Better separation of concerns
+- ✅ Independent deployment and scaling
+- ⚠️ Requires both services to be running
+
+---
+
 ## [2.0.0] - 2025-11-06
 
 ### 🚀 Major Update: Single Port Integration & Full Song Playback

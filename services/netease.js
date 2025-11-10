@@ -2,17 +2,18 @@ const axios = require('axios');
 
 /**
  * Netease Cloud Music API service.
- * This service integrates with NeteaseCloudMusicApi for searching and playing music.
- * Now using local routes (integrated into the same server).
+ * This service calls the standalone Netease API service via HTTP.
+ * The Netease API service runs as a separate project (see netease/ folder).
  */
 class NeteaseService {
   constructor() {
-    // Base URL for Netease API - uses internal port 4000 by default.
-    // Can be overridden with NETEASE_API_URL for external API usage.
+    // Base URL for Netease API - uses external service on port 4000 by default.
+    // Can be overridden with NETEASE_API_URL for different service location.
     const neteasePort = process.env.NETEASE_PORT || 4000;
     this.baseURL = process.env.NETEASE_API_URL || `http://localhost:${neteasePort}`;
     
     // Cookie for authentication (enables full song access and VIP features).
+    // This cookie is passed to the Netease API service.
     this.cookie = process.env.NETEASE_COOKIE || '';
   }
   
@@ -51,14 +52,20 @@ class NeteaseService {
       
       const response = await axios.get(`${this.baseURL}/cloudsearch`, config);
 
-      if (response.data.code !== 200) {
-        throw new Error('Netease API returned error: ' + response.data.code);
+      // Handle response format from standalone netease service.
+      // Response format: {status: 200, body: {result: {...}, code: 200}}
+      const data = response.data.body || response.data;
+      const code = data.code || response.data.status || response.status;
+
+      if (code !== 200) {
+        throw new Error('Netease API returned error: ' + code);
       }
 
-      const formatted = this.formatSearchResults(response.data.result);
+      const result = data.result || data;
+      const formatted = this.formatSearchResults(result);
       
       // Add pagination info.
-      const total = response.data.result?.songCount || 0;
+      const total = result?.songCount || 0;
       formatted.total = total;
       formatted.offset = offset;
       formatted.limit = limit;
@@ -86,12 +93,17 @@ class NeteaseService {
       
       const response = await axios.get(`${this.baseURL}/song/url/v1`, config);
 
-      if (response.data.code !== 200 || !response.data.data || response.data.data.length === 0) {
+      // Handle response format from standalone netease service.
+      // Response format: {status: 200, body: {data: [...], code: 200}}
+      const data = response.data.body || response.data;
+      const code = data.code || response.data.status || response.status;
+
+      if (code !== 200 || !data.data || data.data.length === 0) {
         console.warn(`No URL found for song ${id} with level ${level}`);
         return null;
       }
 
-      const songData = response.data.data[0];
+      const songData = data.data[0];
       
       // Log additional info if cookie is used.
       if (this.cookie && songData.freeTrialInfo) {
@@ -115,13 +127,18 @@ class NeteaseService {
       const config = this.getRequestConfig({ id: id });
       const response = await axios.get(`${this.baseURL}/lyric`, config);
 
-      if (response.data.code !== 200) {
+      // Handle response format from standalone netease service.
+      // Response format: {status: 200, body: {lrc: {...}, tlyric: {...}, code: 200}}
+      const data = response.data.body || response.data;
+      const code = data.code || response.data.status || response.status;
+
+      if (code !== 200) {
         return null;
       }
 
       return {
-        lyric: response.data.lrc?.lyric || null,
-        tlyric: response.data.tlyric?.lyric || null // Translated lyric
+        lyric: data.lrc?.lyric || null,
+        tlyric: data.tlyric?.lyric || null // Translated lyric
       };
     } catch (error) {
       console.error('Get lyric error:', error.message);
@@ -199,12 +216,17 @@ class NeteaseService {
       const config = this.getRequestConfig({});
       const response = await axios.get(`${this.baseURL}/login/status`, config);
       
-      if (response.data.code === 200 && response.data.data) {
+      // Handle response format from standalone netease service.
+      // Response format: {status: 200, body: {data: {...}, code: 200}}
+      const data = response.data.body || response.data;
+      const code = data.code || response.data.status || response.status;
+      
+      if (code === 200 && data.data) {
         return {
           logged_in: true,
-          user_id: response.data.data.profile?.userId || null,
-          nickname: response.data.data.profile?.nickname || 'Unknown',
-          vip_type: response.data.data.profile?.vipType || 0
+          user_id: data.data.profile?.userId || null,
+          nickname: data.data.profile?.nickname || 'Unknown',
+          vip_type: data.data.profile?.vipType || 0
         };
       }
       
