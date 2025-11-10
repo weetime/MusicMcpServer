@@ -5,7 +5,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.95);
+    background: var(--overlay-panel);
     backdrop-filter: blur(10px);
     z-index: 2000;
     display: flex;
@@ -25,13 +25,13 @@
     align-items: center;
     margin-bottom: 40px;
     padding-bottom: 20px;
-    border-bottom: 1px solid #282828;
+    border-bottom: 1px solid var(--border-primary);
 }
 
 .lyrics-title {
     font-size: 1.5rem;
     font-weight: 700;
-    color: #FFFFFF;
+    color: var(--text-primary);
 }
 
 .lyrics-close-btn {
@@ -39,7 +39,7 @@
     height: 40px;
     border: none;
     background: transparent;
-    color: #B3B3B3;
+    color: var(--text-secondary);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -50,8 +50,8 @@
 }
 
 .lyrics-close-btn:hover {
-    color: #FFFFFF;
-    background: #282828;
+    color: var(--text-primary);
+    background: var(--bg-hover);
 }
 
 .lyrics-container {
@@ -67,17 +67,17 @@
 }
 
 .lyrics-container::-webkit-scrollbar-track {
-    background: #181818;
+    background: var(--bg-secondary);
     border-radius: 4px;
 }
 
 .lyrics-container::-webkit-scrollbar-thumb {
-    background: #404040;
+    background: var(--border-secondary);
     border-radius: 4px;
 }
 
 .lyrics-container::-webkit-scrollbar-thumb:hover {
-    background: #555555;
+    background: var(--border-hover);
 }
 
 .lyric-line {
@@ -96,7 +96,7 @@
 .lyric-text {
     font-size: 1.25rem;
     font-weight: 500;
-    color: #FFFFFF;
+    color: var(--text-primary);
     line-height: 1.8;
     margin-bottom: 8px;
 }
@@ -104,27 +104,27 @@
 .lyric-line.active .lyric-text {
     font-size: 1.5rem;
     font-weight: 700;
-    color: #1DB954;
-    text-shadow: 0 0 20px rgba(29, 185, 84, 0.5);
+    color: var(--accent-primary);
+    text-shadow: 0 0 20px var(--accent-shadow);
 }
 
 .lyric-translation {
     font-size: 1rem;
     font-weight: 400;
-    color: #B3B3B3;
+    color: var(--text-secondary);
     line-height: 1.6;
     margin-top: 4px;
 }
 
 .lyric-line.active .lyric-translation {
-    color: #FFFFFF;
+    color: var(--text-primary);
     font-size: 1.125rem;
 }
 
 .lyrics-empty {
     padding: 60px 20px;
     text-align: center;
-    color: #666666;
+    color: var(--text-disabled);
     font-size: 1rem;
 }
 

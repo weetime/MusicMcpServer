@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MusicEcho - Discover and play music</title>
     <!-- Modular CSS -->
+    <link rel="stylesheet" href="css/themes.css">
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/header.css">
     <link rel="stylesheet" href="css/search.css">
@@ -20,6 +21,22 @@
         <div class="header-content">
             <h1 class="title">MusicEcho</h1>
             <p class="subtitle">Discover and play music powered by Netease Cloud Music</p>
+        </div>
+        <div class="header-actions">
+            <div class="theme-selector">
+                <button id="themeBtn" class="theme-btn" title="Change Theme">
+                    <svg class="theme-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="4"></circle>
+                        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+                    </svg>
+                </button>
+                <div id="themeDropdown" class="theme-dropdown hidden">
+                    <div class="theme-dropdown-header">
+                        <span>选择主题</span>
+                    </div>
+                    <div class="theme-list" id="themeList"></div>
+                </div>
+            </div>
         </div>
     </header>
 

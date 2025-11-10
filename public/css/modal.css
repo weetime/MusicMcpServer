@@ -25,16 +25,16 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.7);
+    background: var(--overlay-backdrop);
     backdrop-filter: blur(4px);
 }
 
 .modal-dialog {
     position: relative;
-    background: #181818;
+    background: var(--bg-secondary);
     border-radius: 12px;
-    border: 1px solid #282828;
-    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.8);
+    border: 1px solid var(--border-primary);
+    box-shadow: 0 16px 48px var(--shadow-lg);
     width: 90%;
     max-width: 480px;
     max-height: 90vh;
@@ -55,13 +55,13 @@
     align-items: center;
     justify-content: space-between;
     padding: 20px 24px;
-    border-bottom: 1px solid #282828;
+    border-bottom: 1px solid var(--border-primary);
 }
 
 .modal-title {
     font-size: 1.25rem;
     font-weight: 600;
-    color: #FFFFFF;
+    color: var(--text-primary);
     margin: 0;
 }
 
@@ -70,7 +70,7 @@
     height: 32px;
     border: none;
     background: transparent;
-    color: #B3B3B3;
+    color: var(--text-secondary);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -82,8 +82,8 @@
 }
 
 .modal-close-btn:hover {
-    color: #FFFFFF;
-    background: #282828;
+    color: var(--text-primary);
+    background: var(--bg-hover);
 }
 
 .modal-close-btn svg {
@@ -98,7 +98,7 @@
 }
 
 .modal-message {
-    color: #B3B3B3;
+    color: var(--text-secondary);
     font-size: 1rem;
     line-height: 1.6;
     margin: 0;
@@ -121,7 +121,7 @@
     justify-content: flex-end;
     gap: 12px;
     padding: 20px 24px;
-    border-top: 1px solid #282828;
+    border-top: 1px solid var(--border-primary);
 }
 
 .modal-btn {
@@ -137,30 +137,30 @@
 }
 
 .modal-btn-primary {
-    background: #1DB954;
-    color: #FFFFFF;
+    background: var(--accent-primary);
+    color: var(--text-primary);
 }
 
 .modal-btn-primary:hover {
-    background: #1ed760;
+    background: var(--accent-hover);
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(29, 185, 84, 0.3);
+    box-shadow: 0 4px 12px var(--accent-shadow);
 }
 
 .modal-btn-primary:active {
     transform: translateY(0);
-    box-shadow: 0 2px 6px rgba(29, 185, 84, 0.2);
+    box-shadow: 0 2px 6px var(--accent-shadow);
 }
 
 .modal-btn-secondary {
-    background: #2A2A2A;
-    color: #FFFFFF;
-    border: 1px solid #404040;
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-secondary);
 }
 
 .modal-btn-secondary:hover {
-    background: #333333;
-    border-color: #505050;
+    background: var(--bg-hover);
+    border-color: var(--border-hover);
     transform: translateY(-1px);
 }
 
