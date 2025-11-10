@@ -28,11 +28,15 @@ import {
 import { togglePlaylist, renderPlaylist } from './playlist.js';
 import { toggleLyrics } from './lyrics.js';
 import { goToPreviousPage, goToNextPage } from './results.js';
+import { initThemeUI } from './ui-theme.js';
 
 /**
  * Initializes the application.
  */
 function init() {
+    // Initialize theme system first.
+    initThemeUI();
+    
     // Event listeners.
     dom.searchBtn.addEventListener('click', handleSearch);
     dom.songInput.addEventListener('keypress', (e) => {
