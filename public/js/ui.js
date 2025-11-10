@@ -6,17 +6,26 @@
 import { dom } from './dom.js';
 
 /**
- * Shows loading indicator.
+ * Shows loading overlay with smooth fade-in animation.
  */
 export function showLoading() {
-    dom.loadingIndicator.classList.remove('hidden');
+    const loading = dom.loadingIndicator;
+    if (loading) {
+        // Remove hidden class to trigger CSS transition.
+        loading.classList.remove('hidden');
+    }
 }
 
 /**
- * Hides loading indicator.
+ * Hides loading overlay with smooth fade-out animation.
  */
 export function hideLoading() {
-    dom.loadingIndicator.classList.add('hidden');
+    const loading = dom.loadingIndicator;
+    if (loading) {
+        // Add hidden class to trigger CSS fade-out transition.
+        // The CSS transition will handle the animation smoothly.
+        loading.classList.add('hidden');
+    }
 }
 
 /**

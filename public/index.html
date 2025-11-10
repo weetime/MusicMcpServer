@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="css/player.css">
     <link rel="stylesheet" href="css/lyrics.css">
     <link rel="stylesheet" href="css/modal.css">
+    <link rel="stylesheet" href="css/instruments.css">
     <link rel="stylesheet" href="css/responsive.css">
 </head>
 <body>
@@ -23,6 +24,14 @@
             <p class="subtitle">Discover and play music powered by Netease Cloud Music</p>
         </div>
         <div class="header-actions">
+            <div class="instruments-selector">
+                <button id="instrumentsBtn" class="instruments-btn" title="乐器频道">
+                    <span class="instruments-btn-text">🎼 乐器频道</span>
+                </button>
+                <div id="instrumentsDropdown" class="instruments-dropdown hidden">
+                    <div class="instruments-dropdown-content" id="instrumentsContent"></div>
+                </div>
+            </div>
             <div class="theme-selector">
                 <button id="themeBtn" class="theme-btn" title="Change Theme">
                     <svg class="theme-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -87,11 +96,12 @@
     </div>
 
     <div class="container">
-
-        <!-- Loading Indicator -->
-        <div id="loadingIndicator" class="loading-indicator hidden">
-            <div class="spinner"></div>
-            <p>Searching...</p>
+        <!-- Loading Overlay -->
+        <div id="loadingIndicator" class="loading-overlay hidden">
+            <div class="loading-content">
+                <div class="spinner"></div>
+                <p>Searching...</p>
+            </div>
         </div>
 
         <!-- Search Results -->
