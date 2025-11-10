@@ -6,6 +6,7 @@
 import { dom } from './dom.js';
 import { MAX_HISTORY_ITEMS } from './state.js';
 import { handleSearch, setArtistInputModified } from './search.js';
+import { confirm } from './modal.js';
 
 /**
  * Saves a search query to history.
@@ -128,8 +129,9 @@ export function hideSearchHistory() {
 /**
  * Clears all search history.
  */
-export function clearSearchHistory() {
-    if (confirm('确定要清除所有搜索历史吗？')) {
+export async function clearSearchHistory() {
+    const confirmed = await confirm('确定要清除所有搜索历史吗？', '清除历史记录');
+    if (confirmed) {
         localStorage.removeItem('musicSearchHistory');
         renderSearchHistory();
         hideSearchHistory();

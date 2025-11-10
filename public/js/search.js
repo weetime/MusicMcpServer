@@ -8,6 +8,7 @@ import { saveSearchHistory, hideSearchHistory } from './history.js';
 import { showLoading, hideLoading } from './ui.js';
 import { hideResults } from './ui.js';
 import { displayResults, setPaginationQuery } from './results.js';
+import { alert } from './modal.js';
 
 // Search state.
 let currentQuery = '';
@@ -43,7 +44,7 @@ export async function handleSearch(page = 1, queryOverride = null) {
         const artist = dom.artistInput.value.trim();
         
         if (!song) {
-            alert('Please enter a song name!');
+            await alert('Please enter a song name!', '提示');
             return;
         }
         
@@ -103,13 +104,13 @@ export async function handleSearch(page = 1, queryOverride = null) {
             displayResults(data.results.tracks.items, data.pagination);
         } else {
             if (page === 1) {
-                alert('No songs found. Please try different keywords.');
+                await alert('No songs found. Please try different keywords.', '未找到结果');
             }
             hideLoading();
         }
     } catch (error) {
         console.error('Search error:', error);
-        alert('Search error: ' + error.message);
+        await alert('Search error: ' + error.message, '搜索错误');
         hideLoading();
     }
 }

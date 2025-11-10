@@ -16,6 +16,7 @@ import {
 import { qualityNames } from './state.js';
 import { formatTime } from './utils.js';
 import { fetchLyrics, updateLyrics, clearLyrics } from './lyrics.js';
+import { alert } from './modal.js';
 
 /**
  * Plays the selected track.
@@ -24,7 +25,7 @@ import { fetchLyrics, updateLyrics, clearLyrics } from './lyrics.js';
  */
 export async function playTrack(track) {
     if (!track.preview_url) {
-        alert('Sorry, this song has no preview audio available.\n\nUnable to get playback URL.');
+        await alert('Sorry, this song has no preview audio available.\n\nUnable to get playback URL.', '播放失败');
         return;
     }
     
@@ -51,7 +52,7 @@ export async function playTrack(track) {
     try {
         // All tracks are Netease tracks (preview_url format: "netease:SONG_ID").
         if (!track.preview_url.startsWith('netease:')) {
-            alert('Invalid track format. Expected Netease track.');
+            await alert('Invalid track format. Expected Netease track.', '播放错误');
             return;
         }
         
@@ -65,7 +66,7 @@ export async function playTrack(track) {
         const data = await response.json();
         
         if (!data.success || !data.url) {
-            alert('Sorry, this song has no available audio.\n\nMay be due to copyright restrictions or the song has been removed.\nYou can try switching to a lower quality level.');
+            await alert('Sorry, this song has no available audio.\n\nMay be due to copyright restrictions or the song has been removed.\nYou can try switching to a lower quality level.', '播放失败');
             return;
         }
         
@@ -81,7 +82,7 @@ export async function playTrack(track) {
         await fetchLyrics(songId);
     } catch (error) {
         console.error('Playback error:', error);
-        alert('Playback failed. Please try again later.\n\n' + error.message);
+        await alert('Playback failed. Please try again later.\n\n' + error.message, '播放错误');
     }
 }
 
@@ -202,9 +203,9 @@ export async function handleTrackEnd() {
 /**
  * Handles audio loading errors.
  */
-export function handleAudioError() {
+export async function handleAudioError() {
     console.error('Audio playback error');
-    alert('Audio loading failed. Please try another song.');
+    await alert('Audio loading failed. Please try another song.', '播放错误');
     setIsPlaying(false);
     updatePlayPauseIcon();
 }

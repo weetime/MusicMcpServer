@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const searchRoutes = require('./routes/search');
+const apiRoutes = require('./routes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -17,31 +17,8 @@ app.use(express.json());
 // Serve static files from public directory.
 app.use(express.static(path.join(__dirname, 'public')));
 
-// API health check endpoint.
-app.get('/api/health', async (req, res) => {
-  const neteaseService = require('./services/netease');
-  const loginStatus = await neteaseService.getLoginStatus();
-  const neteaseHealth = await neteaseService.checkHealth();
-  
-  res.json({
-    message: 'MusicMcpServer API is running',
-    version: '2.1.0',
-    source: 'Netease Cloud Music',
-    netease_api_url: neteaseService.baseURL,
-    netease_api_health: neteaseHealth ? 'connected' : 'disconnected',
-    cookie_configured: neteaseService.hasCookie(),
-    login_status: loginStatus,
-    endpoints: {
-      search: '/api/search?q=keyword&limit=10',
-      songUrl: '/api/song-url/:id?level=higher',
-      lyric: '/api/lyric/:id',
-      test: '/api/test/song/:id'
-    }
-  });
-});
-
-// Routes configuration.
-app.use('/api', searchRoutes);
+// API routes configuration.
+app.use('/api', apiRoutes);
 
 // Error handling middleware.
 app.use((err, req, res, next) => {
