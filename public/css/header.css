@@ -121,10 +121,6 @@
     background: var(--accent-hover);
 }
 
-.instruments-dropdown-wrapper {
-    display: flex;
-    flex-direction: column;
-}
 
 /* Theme Selector */
 .theme-selector {

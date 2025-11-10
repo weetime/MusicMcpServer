@@ -84,12 +84,4 @@ export async function preloadIcons() {
     }
 }
 
-/**
- * Gets icon path for an instrument.
- * @param {string} instrumentName - Name of the instrument.
- * @returns {string} Icon file path.
- */
-export function getIconPath(instrumentName) {
-    return iconPaths[instrumentName] || iconPaths.Guitar;
-}
 

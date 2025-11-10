@@ -39,10 +39,6 @@ export async function renderInstruments(container) {
         console.warn('Failed to preload icons, using fallback:', error);
     }
     
-    // Create scrollable content wrapper.
-    const contentWrapper = document.createElement('div');
-    contentWrapper.className = 'instruments-dropdown-wrapper';
-    
     // Create single grid for all instruments.
     const instrumentsGrid = document.createElement('div');
     instrumentsGrid.className = 'instruments-grid';
@@ -84,8 +80,7 @@ export async function renderInstruments(container) {
         instrumentsGrid.appendChild(instrumentCard);
     }
     
-    contentWrapper.appendChild(instrumentsGrid);
-    container.appendChild(contentWrapper);
+    container.appendChild(instrumentsGrid);
 }
 
 
