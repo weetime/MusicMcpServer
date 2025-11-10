@@ -4,7 +4,7 @@
  */
 
 import { dom } from './dom.js';
-import { handleSearch } from './search.js';
+import { handleSearch, setArtistInputModified } from './search.js';
 import { 
     showSearchHistory, 
     hideSearchHistory, 
@@ -52,6 +52,13 @@ function init() {
     dom.songInput.addEventListener('focus', showSearchHistory);
     dom.songInput.addEventListener('input', handleSearchInput);
     dom.clearHistoryBtn.addEventListener('click', clearSearchHistory);
+    
+    // Track artist input modifications.
+    dom.artistInput.addEventListener('input', () => {
+        // Mark as modified if user has entered something, otherwise clear the flag.
+        const hasValue = dom.artistInput.value.trim().length > 0;
+        setArtistInputModified(hasValue);
+    });
     
     // Hide search history when clicking outside.
     document.addEventListener('click', (e) => {

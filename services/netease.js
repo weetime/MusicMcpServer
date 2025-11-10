@@ -9,8 +9,7 @@ class NeteaseService {
   constructor() {
     // Base URL for Netease API - uses external service on port 4000 by default.
     // Can be overridden with NETEASE_API_URL for different service location.
-    const neteasePort = process.env.NETEASE_PORT || 4000;
-    this.baseURL = process.env.NETEASE_API_URL || `http://localhost:${neteasePort}`;
+    this.baseURL = process.env.NETEASE_API_URL || 'http://localhost:4000';
     
     // Cookie for authentication (enables full song access and VIP features).
     // This cookie is passed to the Netease API service.

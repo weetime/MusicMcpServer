@@ -201,7 +201,6 @@ Create a `.env` file:
 ```bash
 # Netease API Configuration
 NETEASE_API_URL=http://localhost:4000
-NETEASE_API_PORT=4000
 
 # Server Configuration
 PORT=3000

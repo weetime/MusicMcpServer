@@ -5,7 +5,7 @@
 
 import { dom } from './dom.js';
 import { MAX_HISTORY_ITEMS } from './state.js';
-import { handleSearch } from './search.js';
+import { handleSearch, setArtistInputModified } from './search.js';
 
 /**
  * Saves a search query to history.
@@ -170,9 +170,13 @@ function selectHistoryItem(query) {
         // Try to split: assume first part is song, rest is artist.
         dom.songInput.value = parts[0];
         dom.artistInput.value = parts.slice(1).join(' ');
+        // Mark artist as modified since it was set from history.
+        setArtistInputModified(true);
     } else {
         dom.songInput.value = query;
         dom.artistInput.value = '';
+        // Clear artist modification flag since artist is empty.
+        setArtistInputModified(false);
     }
     
     hideSearchHistory();

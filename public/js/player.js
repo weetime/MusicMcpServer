@@ -19,7 +19,7 @@ import { fetchLyrics, updateLyrics, clearLyrics } from './lyrics.js';
 
 /**
  * Plays the selected track.
- * Handles both Spotify (direct URL) and Netease (fetch URL via API) tracks.
+ * Handles Netease tracks (fetch URL via API).
  * @param {Object} track - Track object to play.
  */
 export async function playTrack(track) {
@@ -49,34 +49,28 @@ export async function playTrack(track) {
     dom.musicPlayer.classList.remove('hidden');
     
     try {
-        let audioUrl;
+        // All tracks are Netease tracks (preview_url format: "netease:SONG_ID").
+        if (!track.preview_url.startsWith('netease:')) {
+            alert('Invalid track format. Expected Netease track.');
+            return;
+        }
         
-        // Check if this is a Netease track (preview_url starts with "netease:").
-        if (track.preview_url.startsWith('netease:')) {
-            const songId = track.preview_url.replace('netease:', '');
-            
-            // Get selected quality level.
-            const quality = dom.qualitySelect.value;
-            
-            // Fetch the actual playback URL from API with selected quality.
-            const response = await fetch(`/api/song-url/${songId}?level=${quality}`);
-            const data = await response.json();
-            
-            if (!data.success || !data.url) {
-                alert('Sorry, this song has no available audio.\n\nMay be due to copyright restrictions or the song has been removed.\nYou can try switching to a lower quality level.');
-                return;
-            }
-            
-            audioUrl = data.url;
-            
-            // Quality info is no longer displayed in the fixed player.
-        } else {
-            // Spotify or other source with direct URL.
-            audioUrl = track.preview_url;
+        const songId = track.preview_url.replace('netease:', '');
+        
+        // Get selected quality level.
+        const quality = dom.qualitySelect.value;
+        
+        // Fetch the actual playback URL from API with selected quality.
+        const response = await fetch(`/api/song-url/${songId}?level=${quality}`);
+        const data = await response.json();
+        
+        if (!data.success || !data.url) {
+            alert('Sorry, this song has no available audio.\n\nMay be due to copyright restrictions or the song has been removed.\nYou can try switching to a lower quality level.');
+            return;
         }
         
         // Load and play audio.
-        dom.audioPlayer.src = audioUrl;
+        dom.audioPlayer.src = data.url;
         dom.audioPlayer.load();
         dom.audioPlayer.play();
         
@@ -84,13 +78,7 @@ export async function playTrack(track) {
         updatePlayPauseIcon();
         
         // Fetch lyrics for Netease tracks.
-        if (track.preview_url.startsWith('netease:')) {
-            const songId = track.preview_url.replace('netease:', '');
-            await fetchLyrics(songId);
-        } else {
-            // Clear lyrics for non-Netease tracks.
-            clearLyrics();
-        }
+        await fetchLyrics(songId);
     } catch (error) {
         console.error('Playback error:', error);
         alert('Playback failed. Please try again later.\n\n' + error.message);

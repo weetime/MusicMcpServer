@@ -14,6 +14,17 @@ let currentQuery = '';
 let currentPage = 1;
 const PAGE_SIZE = 12;
 
+// Track if artist input was manually modified by user.
+let artistInputModified = false;
+
+/**
+ * Sets the artist input modification flag.
+ * @param {boolean} modified - Whether the artist input was modified.
+ */
+export function setArtistInputModified(modified) {
+    artistInputModified = modified;
+}
+
 /**
  * Handles search button click.
  * Default music source is Netease Cloud Music for better Chinese song support.
@@ -37,9 +48,16 @@ export async function handleSearch(page = 1, queryOverride = null) {
         }
         
         // Build search query for Netease (simply combine with space).
+        // Only include artist if it was manually modified by user.
         query = song;
-        if (artist) {
+        if (artist && artistInputModified) {
             query += ` ${artist}`;
+        }
+        
+        // Reset artist input modification flag after building query for new search.
+        // This ensures that if user doesn't modify artist input, it won't be used in next search.
+        if (page === 1) {
+            artistInputModified = false;
         }
     }
     

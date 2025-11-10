@@ -85,8 +85,8 @@ cp .env.example .env
 PORT=3000
 NODE_ENV=development
 
-# Netease Configuration
-NETEASE_PORT=4000
+# Netease API Configuration
+NETEASE_API_URL=http://localhost:4000
 
 # 🍪 添加你的 Cookie（重要！）
 NETEASE_COOKIE=MUSIC_U=你的值; __csrf=你的值; NMTID=你的值
