@@ -35,7 +35,6 @@ app.get('/api/health', async (req, res) => {
       search: '/api/search?q=keyword&limit=10',
       songUrl: '/api/song-url/:id?level=higher',
       lyric: '/api/lyric/:id',
-      esp32: '/api/esp32/song?q=song_name&artist=artist_name&level=higher',
       test: '/api/test/song/:id'
     }
   });
