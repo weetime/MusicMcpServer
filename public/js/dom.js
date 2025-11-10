@@ -47,6 +47,11 @@ export const dom = {
     lyricsBtn: document.getElementById('lyricsBtn'),
     lyricsPanel: document.getElementById('lyricsPanel'),
     lyricsContainer: document.getElementById('lyricsContainer'),
-    lyricsCloseBtn: document.getElementById('lyricsCloseBtn')
+    lyricsCloseBtn: document.getElementById('lyricsCloseBtn'),
+    
+    // Instruments channel elements.
+    instrumentsBtn: document.getElementById('instrumentsBtn'),
+    instrumentsDropdown: document.getElementById('instrumentsDropdown'),
+    instrumentsContent: document.getElementById('instrumentsContent')
 };
 

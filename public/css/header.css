@@ -40,6 +40,92 @@
     gap: 12px;
 }
 
+/* Instruments Selector */
+.instruments-selector {
+    position: relative;
+}
+
+.instruments-btn {
+    padding: 8px 16px;
+    border: none;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    font-size: 0.9375rem;
+    font-weight: 500;
+}
+
+.instruments-btn:hover {
+    background: var(--bg-hover);
+    transform: translateY(-1px);
+}
+
+.instruments-btn-text {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Instruments Dropdown */
+.instruments-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    width: 640px;
+    max-height: 520px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(30px) saturate(180%);
+    -webkit-backdrop-filter: blur(30px) saturate(180%);
+    border-radius: 20px;
+    border: 0.5px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.2),
+        0 2px 8px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    z-index: 1000;
+    overflow: hidden;
+}
+
+.instruments-dropdown.hidden {
+    display: none;
+}
+
+.instruments-dropdown-content {
+    padding: 0;
+    max-height: 520px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent-primary) var(--bg-secondary);
+}
+
+.instruments-dropdown-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.instruments-dropdown-content::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+    border-radius: 4px;
+}
+
+.instruments-dropdown-content::-webkit-scrollbar-thumb {
+    background: var(--accent-primary);
+    border-radius: 4px;
+}
+
+.instruments-dropdown-content::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-hover);
+}
+
+.instruments-dropdown-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
 /* Theme Selector */
 .theme-selector {
     position: relative;

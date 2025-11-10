@@ -29,6 +29,7 @@ import { togglePlaylist, renderPlaylist } from './playlist.js';
 import { toggleLyrics } from './lyrics.js';
 import { goToPreviousPage, goToNextPage } from './results.js';
 import { initThemeUI } from './ui-theme.js';
+import { renderInstruments, toggleInstrumentsDropdown, hideInstrumentsDropdown } from './instruments.js';
 
 /**
  * Initializes the application.
@@ -36,6 +37,28 @@ import { initThemeUI } from './ui-theme.js';
 function init() {
     // Initialize theme system first.
     initThemeUI();
+    
+    // Initialize instruments channel dropdown.
+    if (dom.instrumentsContent) {
+        renderInstruments(dom.instrumentsContent).catch(err => {
+            console.error('Error initializing instruments:', err);
+        });
+    }
+    
+    // Instruments channel button event.
+    if (dom.instrumentsBtn) {
+        dom.instrumentsBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleInstrumentsDropdown();
+        });
+    }
+    
+    // Hide instruments dropdown when clicking outside.
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.instruments-selector')) {
+            hideInstrumentsDropdown();
+        }
+    });
     
     // Event listeners.
     dom.searchBtn.addEventListener('click', handleSearch);

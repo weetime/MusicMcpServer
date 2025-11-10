@@ -42,6 +42,7 @@ MusicMcpServer/
 │   │   ├── player.css       # 播放器样式
 │   │   ├── lyrics.css       # 歌词面板样式
 │   │   ├── modal.css        # 模态框样式
+│   │   ├── instruments.css  # 乐器频道样式
 │   │   └── responsive.css  # 响应式样式
 │   └── js/                 # JavaScript 模块
 │       ├── app.js          # 应用入口
@@ -49,6 +50,7 @@ MusicMcpServer/
 │       ├── state.js        # 状态管理
 │       ├── theme.js        # 主题管理核心模块
 │       ├── ui-theme.js     # 主题 UI 交互模块
+│       ├── instruments.js  # 乐器频道模块
 │       ├── search.js       # 搜索功能
 │       ├── results.js      # 搜索结果处理
 │       ├── player.js        # 播放器控制
@@ -69,26 +71,35 @@ MusicMcpServer/
 
 ## 主要功能
 
-### 1. 音乐搜索
+### 1. 乐器频道 🎼
+- **4 个分类，共 20 种乐器**：
+  - 🎵 **流行入门推荐**：Acoustic Guitar（木吉他）、Keyboard（电子琴）、Cajón（卡洪鼓）、Ukulele（尤克里里）、Harmonica（口琴）
+  - 🎻 **经典原声乐器**：Violin（小提琴）、Cello（大提琴）、Flute（长笛）、Piano（钢琴）、Classical Guitar（古典吉他）
+  - 🥁 **现代乐队必备**：Electric Guitar（电吉他）、Bass Guitar（电贝司）、Drum Set（架子鼓）、Synthesizer（合成器）、Microphone（麦克风）
+  - 🌏 **世界民族乐器精选**：Erhu（二胡）、Djembe（非洲手鼓）、Sitar（锡塔尔琴）、Pan Flute（排箫）、Shamisen（三味线）
+- **一键搜索**：点击乐器卡片自动搜索相关音乐
+- **响应式布局**：适配桌面、平板、移动设备
+
+### 2. 音乐搜索
 - 支持按歌曲名、艺术家、专辑搜索
 - 支持高级搜索选项（艺术家筛选、音质选择）
 - 搜索历史记录功能
 - 分页显示搜索结果
 
-### 2. 在线播放
+### 3. 在线播放
 - 支持多种音质（Standard、Higher、Extremely High、Lossless、Hi-Res）
 - 播放进度控制
 - 音量控制
 - 播放/暂停、上一首/下一首
 - 播放列表管理
 
-### 3. 歌词显示
+### 4. 歌词显示
 - 实时歌词同步显示
 - 支持中英文歌词
 - 歌词翻译显示
 - 全屏歌词面板
 
-### 4. 多主题支持 ✨
+### 5. 多主题支持 ✨
 - **6 个预设主题**：
   - Dark（深色）- 默认主题
   - Light（浅色）
@@ -100,7 +111,7 @@ MusicMcpServer/
 - **主题持久化**：自动保存用户选择的主题
 - **CSS 变量系统**：使用 CSS 自定义属性实现主题切换
 
-### 5. 响应式设计
+### 6. 响应式设计
 - 支持桌面、平板、移动设备
 - 自适应布局
 - 触摸友好的交互
@@ -155,6 +166,13 @@ curl "http://localhost:3000/api/lyric/186001"
 ```
 
 ## 使用方式
+
+### 使用乐器频道
+
+1. 在首页浏览乐器频道，查看 4 个分类共 20 种乐器
+2. 点击任意乐器卡片（例如：`Acoustic Guitar`、`二胡`）
+3. 系统自动搜索该乐器相关的音乐
+4. 浏览搜索结果并播放
 
 ### 搜索音乐
 
