@@ -31,8 +31,9 @@ export function setArtistInputModified(modified) {
  * Default music source is Netease Cloud Music for better Chinese song support.
  * @param {number} page - Page number (default: 1).
  * @param {string} queryOverride - Optional query string to override input values (for pagination).
+ * @param {boolean} append - Whether to append results (for infinite scroll).
  */
-export async function handleSearch(page = 1, queryOverride = null) {
+export async function handleSearch(page = 1, queryOverride = null, append = false) {
     let query;
     
     if (queryOverride) {
@@ -70,8 +71,10 @@ export async function handleSearch(page = 1, queryOverride = null) {
     // Hide search history.
     hideSearchHistory();
     
-    // Show loading state.
-    showLoading();
+    // Show loading state (only for first page or desktop pagination).
+    if (page === 1 || !append) {
+        showLoading();
+    }
     if (page === 1) {
         hideResults();
     }
@@ -97,11 +100,13 @@ export async function handleSearch(page = 1, queryOverride = null) {
             currentQuery = query;
             currentPage = page;
             
-            // Update pagination query in results module.
-            setPaginationQuery(query);
+            // Update pagination query in results module (only for first page).
+            if (page === 1) {
+                setPaginationQuery(query);
+            }
             
             // Display results with pagination info.
-            displayResults(data.results.tracks.items, data.pagination);
+            displayResults(data.results.tracks.items, data.pagination, append);
         } else {
             if (page === 1) {
                 await alert('No songs found. Please try different keywords.', '未找到结果');

@@ -23,19 +23,25 @@ import {
     closePlayerPanel,
     playPreviousTrack,
     playNextTrack,
-    updateVolumeIcon
+    updateVolumeIcon,
+    toggleShuffle,
+    toggleRepeat
 } from './player.js';
 import { togglePlaylist, renderPlaylist } from './playlist.js';
 import { toggleLyrics } from './lyrics.js';
 import { goToPreviousPage, goToNextPage } from './results.js';
 import { initThemeUI } from './ui-theme.js';
 import { renderInstruments, toggleInstrumentsDropdown, hideInstrumentsDropdown } from './instruments.js';
+import { initResponsive } from './responsive.js';
 
 /**
  * Initializes the application.
  */
 function init() {
-    // Initialize theme system first.
+    // Initialize responsive utilities first (for dynamic height calculations).
+    initResponsive();
+    
+    // Initialize theme system.
     initThemeUI();
     
     // Initialize instruments channel dropdown.
@@ -50,6 +56,17 @@ function init() {
         dom.instrumentsBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             toggleInstrumentsDropdown();
+            // Update aria-expanded attribute.
+            const isExpanded = !dom.instrumentsDropdown.classList.contains('hidden');
+            dom.instrumentsBtn.setAttribute('aria-expanded', isExpanded);
+        });
+        
+        // Keyboard support for instruments button.
+        dom.instrumentsBtn.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                dom.instrumentsBtn.click();
+            }
         });
     }
     
@@ -113,6 +130,14 @@ function init() {
             await playNextTrack();
             renderPlaylist();
         });
+    }
+    
+    // Shuffle and Repeat button events.
+    if (dom.shuffleBtn) {
+        dom.shuffleBtn.addEventListener('click', toggleShuffle);
+    }
+    if (dom.repeatBtn) {
+        dom.repeatBtn.addEventListener('click', toggleRepeat);
     }
     
     // Queue/Playlist button events.

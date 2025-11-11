@@ -109,6 +109,7 @@ function createModal(title, message, type) {
     
     const titleEl = document.createElement('h3');
     titleEl.className = 'modal-title';
+    titleEl.id = 'modal-title';
     titleEl.textContent = title;
     
     const closeBtn = document.createElement('button');
@@ -129,10 +130,17 @@ function createModal(title, message, type) {
     
     const messageEl = document.createElement('p');
     messageEl.className = 'modal-message';
-    // Preserve line breaks in message.
-    messageEl.innerHTML = message.split('\n').map(line => {
-        return line.trim() ? `<span>${line}</span>` : '<br>';
-    }).join('');
+    // Preserve line breaks in message using DOM API for security.
+    message.split('\n').forEach((line, index) => {
+        if (index > 0) {
+            messageEl.appendChild(document.createElement('br'));
+        }
+        if (line.trim()) {
+            const span = document.createElement('span');
+            span.textContent = line;
+            messageEl.appendChild(span);
+        }
+    });
     
     body.appendChild(messageEl);
     
@@ -171,6 +179,10 @@ function createModal(title, message, type) {
 function showModal(modal) {
     document.body.appendChild(modal);
     
+    // Store the previously focused element for restoration.
+    const previousActiveElement = document.activeElement;
+    modal.dataset.previousActiveElement = previousActiveElement ? previousActiveElement.id || '' : '';
+    
     // Set up close button handler after modal is in DOM.
     const closeBtn = modal.querySelector('.modal-close-btn');
     if (closeBtn) {
@@ -192,6 +204,14 @@ function showModal(modal) {
         });
     }
     
+    // Focus management: focus on first focusable element.
+    const firstFocusable = modal.querySelector('button');
+    if (firstFocusable) {
+        requestAnimationFrame(() => {
+            firstFocusable.focus();
+        });
+    }
+    
     // Trigger animation by adding active class after a small delay.
     requestAnimationFrame(() => {
         requestAnimationFrame(() => {
@@ -206,6 +226,18 @@ function showModal(modal) {
  */
 function closeModal(modal) {
     modal.classList.remove('modal-active');
+    
+    // Restore focus to previously focused element.
+    const previousId = modal.dataset.previousActiveElement;
+    if (previousId) {
+        const previousElement = document.getElementById(previousId);
+        if (previousElement) {
+            requestAnimationFrame(() => {
+                previousElement.focus();
+            });
+        }
+    }
+    
     // Remove from DOM after animation completes.
     setTimeout(() => {
         if (modal.parentNode) {

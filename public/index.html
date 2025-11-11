@@ -6,6 +6,7 @@
     <title>MusicEcho - Discover and play music</title>
     <!-- Modular CSS -->
     <link rel="stylesheet" href="css/themes.css">
+    <link rel="stylesheet" href="css/breakpoints.css">
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/header.css">
     <link rel="stylesheet" href="css/search.css">
@@ -14,6 +15,7 @@
     <link rel="stylesheet" href="css/lyrics.css">
     <link rel="stylesheet" href="css/modal.css">
     <link rel="stylesheet" href="css/instruments.css">
+    <link rel="stylesheet" href="css/pagination.css">
     <link rel="stylesheet" href="css/responsive.css">
 </head>
 <body>
@@ -25,25 +27,49 @@
         </div>
         <div class="header-actions">
             <div class="instruments-selector">
-                <button id="instrumentsBtn" class="instruments-btn" title="乐器频道">
+                <button 
+                    id="instrumentsBtn" 
+                    class="instruments-btn" 
+                    title="乐器频道"
+                    aria-label="打开乐器频道"
+                    aria-expanded="false"
+                    aria-haspopup="true"
+                >
                     <span class="instruments-btn-text">🎼 乐器频道</span>
                 </button>
-                <div id="instrumentsDropdown" class="instruments-dropdown hidden">
+                <div 
+                    id="instrumentsDropdown" 
+                    class="instruments-dropdown hidden"
+                    role="menu"
+                    aria-labelledby="instrumentsBtn"
+                >
                     <div class="instruments-dropdown-content" id="instrumentsContent"></div>
                 </div>
             </div>
             <div class="theme-selector">
-                <button id="themeBtn" class="theme-btn" title="Change Theme">
-                    <svg class="theme-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <button 
+                    id="themeBtn" 
+                    class="theme-btn" 
+                    title="Change Theme"
+                    aria-label="切换主题"
+                    aria-expanded="false"
+                    aria-haspopup="true"
+                >
+                    <svg class="theme-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                         <circle cx="12" cy="12" r="4"></circle>
                         <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
                     </svg>
                 </button>
-                <div id="themeDropdown" class="theme-dropdown hidden">
+                <div 
+                    id="themeDropdown" 
+                    class="theme-dropdown hidden"
+                    role="menu"
+                    aria-labelledby="themeBtn"
+                >
                     <div class="theme-dropdown-header">
                         <span>选择主题</span>
                     </div>
-                    <div class="theme-list" id="themeList"></div>
+                    <div class="theme-list" id="themeList" role="listbox"></div>
                 </div>
             </div>
         </div>
@@ -65,8 +91,9 @@
                     class="search-bar-input" 
                     placeholder="想播放什么?"
                     autocomplete="off"
+                    aria-label="搜索歌曲名称"
                 >
-                <button id="searchBtn" class="search-bar-btn">Search</button>
+                <button id="searchBtn" class="search-bar-btn" aria-label="搜索">Search</button>
             </div>
             <!-- Search History Dropdown -->
             <div id="searchHistory" class="search-history-dropdown hidden">
@@ -84,8 +111,9 @@
                 class="search-option-input" 
                 placeholder="Artist (optional)"
                 autocomplete="off"
+                aria-label="艺术家名称（可选）"
             >
-            <select id="qualitySelect" class="search-option-select" title="Audio Quality">
+            <select id="qualitySelect" class="search-option-select" title="Audio Quality" aria-label="音质选择">
                 <option value="standard">Standard</option>
                 <option value="higher">Higher</option>
                 <option value="exhigh" selected>Extremely High</option>
@@ -125,6 +153,8 @@
                     </svg>
                 </button>
             </div>
+            <!-- Pagination Container -->
+            <div id="paginationContainer" class="pagination-container"></div>
         </div>
     </div>
 
@@ -140,17 +170,11 @@
                 <div id="trackName" class="player-track-name">Song Name</div>
                 <div id="trackArtist" class="player-track-artist">Artist</div>
             </div>
-            <button class="player-add-btn" title="Add to playlist">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                </svg>
-            </button>
         </div>
         
         <div class="player-center">
             <div class="player-controls-main">
-                <button class="player-control-btn shuffle-btn" title="Shuffle">
+                <button id="shuffleBtn" class="player-control-btn shuffle-btn" title="Shuffle">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <polyline points="16 3 21 3 21 8"></polyline>
                         <line x1="4" y1="20" x2="21" y2="3"></line>
@@ -174,8 +198,8 @@
                         <line x1="19" y1="5" x2="19" y2="19"></line>
                     </svg>
                 </button>
-                <button class="player-control-btn repeat-btn" title="Repeat">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <button id="repeatBtn" class="player-control-btn repeat-btn" title="Repeat Off">
+                    <svg id="repeatIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <polyline points="17 1 21 5 17 9"></polyline>
                         <path d="M3 11V9a4 4 0 0 1 4-4h14"></path>
                         <polyline points="7 23 3 19 7 15"></polyline>
@@ -251,10 +275,21 @@
     </div>
 
     <!-- Lyrics Panel -->
-    <div id="lyricsPanel" class="lyrics-panel hidden">
+    <div 
+        id="lyricsPanel" 
+        class="lyrics-panel hidden"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="lyricsTitle"
+    >
         <div class="lyrics-header">
-            <h2 class="lyrics-title">歌词</h2>
-            <button id="lyricsCloseBtn" class="lyrics-close-btn" title="Close lyrics">
+            <h2 id="lyricsTitle" class="lyrics-title">歌词</h2>
+            <button 
+                id="lyricsCloseBtn" 
+                class="lyrics-close-btn" 
+                title="Close lyrics"
+                aria-label="关闭歌词面板"
+            >
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <line x1="18" y1="6" x2="6" y2="18"></line>
                     <line x1="6" y1="6" x2="18" y2="18"></line>

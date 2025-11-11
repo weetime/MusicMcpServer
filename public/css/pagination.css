@@ -1,10 +1,11 @@
 /* Pagination Container */
 .pagination-container {
-    margin-top: 40px;
+    margin-top: 20px;
+    margin-bottom: 0;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 20px 0;
+    padding: 20px 0 0 0;
 }
 
 /* Pagination */
@@ -77,31 +78,16 @@
 }
 
 /* Responsive Design for Pagination */
+/* Mobile: Hide pagination, use infinite scroll instead */
+@media (max-width: 1023px) {
+    .pagination-container {
+        display: none !important;
+    }
+}
+
 @media (max-width: 768px) {
     .pagination-container {
-        margin-top: 30px;
-        padding: 16px 0;
-    }
-    
-    .pagination {
-        gap: 6px;
-    }
-    
-    .pagination-btn {
-        min-width: 36px;
-        height: 36px;
-        padding: 0 12px;
-        font-size: 0.8125rem;
-    }
-    
-    .pagination-prev,
-    .pagination-next {
-        padding: 0 16px;
-    }
-    
-    .pagination-prev span,
-    .pagination-next span {
-        display: none;
+        display: none !important;
     }
 }
 

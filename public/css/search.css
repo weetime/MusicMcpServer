@@ -1,13 +1,15 @@
 /* Fixed Top Search Bar */
+/* Mobile First: Base styles for mobile */
 .fixed-search-bar {
     position: fixed;
-    top: 120px;
+    top: var(--header-height, 60px); /* Use CSS variable, fallback to 60px */
     left: 0;
     right: 0;
     background: var(--bg-primary);
-    padding: 20px 60px;
+    padding: 10px 16px;
     z-index: 998;
     border-bottom: 1px solid var(--border-primary);
+    transition: top 0.2s ease;
 }
 
 .search-bar-wrapper {
@@ -414,9 +416,9 @@
     }
 }
 
-@media (max-width: 768px) {
+/* Tablet: 768px and up */
+@media (min-width: 768px) {
     .fixed-search-bar {
-        top: 100px; /* Adjust based on header height */
         padding: 12px 20px;
     }
     
@@ -486,49 +488,59 @@
     }
 }
 
-@media (max-width: 480px) {
+/* Desktop: 1024px and up */
+@media (min-width: 1024px) {
     .fixed-search-bar {
-        top: 90px; /* Further adjust for small mobile */
-        padding: 10px 16px;
+        top: var(--header-height, 120px);
+        padding: 20px 60px;
     }
     
     .search-bar-container {
-        border-radius: 1.25rem;
+        border-radius: 2rem;
     }
     
     .search-icon-wrapper {
-        width: 44px;
-        height: 44px;
+        width: 56px;
+        height: 56px;
     }
     
     .search-icon {
-        width: 16px;
-        height: 16px;
+        width: 24px;
+        height: 24px;
     }
     
     .search-bar-input {
-        height: 44px;
-        font-size: 0.875rem;
-        padding: 0 10px;
+        height: 56px;
+        font-size: 1rem;
+        padding: 0 20px;
     }
     
     .search-bar-btn {
-        height: 44px;
-        padding: 0 20px;
-        font-size: 0.875rem;
-        border-radius: 0 1.25rem 1.25rem 0;
+        height: 56px;
+        padding: 0 32px;
+        font-size: 1rem;
+        border-radius: 0 2rem 2rem 0;
     }
     
     .search-options-bar {
-        gap: 6px;
-        margin-top: 8px;
+        flex-direction: row;
+        gap: 12px;
+        margin-top: 12px;
     }
     
     .search-option-input,
     .search-option-select {
-        height: 2rem;
-        font-size: 0.8125rem;
-        padding: 0 12px;
+        height: 2.5rem;
+        font-size: 0.875rem;
+        padding: 0 16px;
+    }
+    
+    .search-option-input {
+        width: 200px;
+    }
+    
+    .search-option-select {
+        width: 160px;
     }
     
     .search-history-dropdown {

@@ -159,16 +159,18 @@
 
 @media (max-width: 768px) {
     .instruments-dropdown {
+        position: fixed !important;
         width: calc(100vw - 40px);
         max-width: 560px;
-        right: auto;
-        left: 50%;
-        transform: translateX(-50%);
-        max-height: 70vh;
+        max-height: 75vh;
+        top: 50% !important;
+        left: 50% !important;
+        right: auto !important;
+        transform: translate(-50%, -50%) !important;
     }
     
     .instruments-dropdown-content {
-        max-height: 70vh;
+        max-height: 75vh;
     }
     
     .instruments-grid {
@@ -200,12 +202,19 @@
 
 @media (max-width: 480px) {
     .instruments-dropdown {
+        position: fixed !important;
         width: calc(100vw - 32px);
-        max-height: 70vh;
+        max-width: calc(100vw - 32px);
+        max-height: 80vh;
+        top: 50% !important;
+        left: 50% !important;
+        right: auto !important;
+        transform: translate(-50%, -50%) !important;
+        border-radius: 16px;
     }
     
     .instruments-dropdown-content {
-        max-height: 70vh;
+        max-height: 80vh;
     }
     
     .instruments-grid {
