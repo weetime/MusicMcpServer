@@ -46,6 +46,14 @@ export function displayResults(tracks, pagination = null, append = false) {
         removeInfiniteScrollLoading();
     }
     
+    // Handle empty results for infinite scroll
+    if (tracks.length === 0 && append) {
+        // No more results to load
+        hasMoreResults = false;
+        removeInfiniteScrollLoading();
+        return;
+    }
+    
     // Add tracks to all loaded tracks
     allLoadedTracks = append ? [...allLoadedTracks, ...tracks] : tracks;
     
@@ -56,7 +64,10 @@ export function displayResults(tracks, pagination = null, append = false) {
     if (pagination) {
         totalResults = pagination.total || 0;
         currentPage = Math.floor((pagination.offset || 0) / PAGE_SIZE) + 1;
-        hasMoreResults = pagination.hasMore || (currentPage * PAGE_SIZE < totalResults);
+        // More accurate calculation: check if there are more items beyond current loaded items
+        const currentOffset = (currentPage - 1) * PAGE_SIZE;
+        const loadedCount = append ? allLoadedTracks.length : tracks.length;
+        hasMoreResults = pagination.hasMore !== false && (currentOffset + loadedCount < totalResults);
         
         // Update results count display.
         if (dom.resultsCount) {
@@ -106,10 +117,15 @@ export function displayResults(tracks, pagination = null, append = false) {
         }, index * 15); // Stagger by 15ms per item for smoother effect
     });
     
-    // Add loading indicator for infinite scroll (mobile only, only on first page)
-    if (isMobile && hasMoreResults && !append) {
-        // Only add if there are more results to load
-        addInfiniteScrollLoading();
+    // Add loading indicator for infinite scroll (mobile only, only if there are more results)
+    if (isMobile && hasMoreResults) {
+        // Only add if there are more results to load and not already loading
+        if (!append && !document.querySelector('.infinite-scroll-loading')) {
+            addInfiniteScrollLoading();
+        }
+    } else if (isMobile && !hasMoreResults) {
+        // Remove loading indicator if no more results
+        removeInfiniteScrollLoading();
     }
     
     dom.searchResults.classList.remove('hidden');
@@ -208,14 +224,13 @@ function setupInfiniteScroll() {
     // Remove existing listener
     removeInfiniteScroll();
     
-    // Track scroll state
-    let rafId = null;
+    // Track scroll state - simplified for better responsiveness
     let lastScrollTop = 0;
-    let lastCheckTime = 0;
+    let ticking = false;
     
     const handleScroll = () => {
         // Prevent multiple simultaneous checks
-        if (isLoadingMore || !hasMoreResults) {
+        if (isLoadingMore || !hasMoreResults || !currentQuery) {
             return;
         }
         
@@ -230,16 +245,7 @@ function setupInfiniteScroll() {
                          document.documentElement.scrollTop || 
                          document.body.scrollTop || 0;
         
-        // Only check if scrolled down (not up) and enough time has passed
-        const now = Date.now();
-        if (scrollTop <= lastScrollTop || (now - lastCheckTime) < 200) {
-            lastScrollTop = scrollTop;
-            return;
-        }
-        
-        lastScrollTop = scrollTop;
-        lastCheckTime = now;
-        
+        // Get viewport and document dimensions
         const windowHeight = window.innerHeight || document.documentElement.clientHeight;
         const documentHeight = Math.max(
             document.body.scrollHeight,
@@ -249,48 +255,50 @@ function setupInfiniteScroll() {
             document.documentElement.offsetHeight
         );
         
-        // Trigger when within 400px of bottom (increased threshold for smoother experience)
-        const threshold = 400;
-        const distanceToBottom = documentHeight - (scrollTop + windowHeight);
+        // Calculate distance to bottom
+        const scrollBottom = scrollTop + windowHeight;
+        const distanceToBottom = documentHeight - scrollBottom;
         
-        if (distanceToBottom <= threshold && distanceToBottom > 0) {
-            // Prevent duplicate triggers
-            if (isLoadingMore) {
-                return;
+        // Trigger when within 500px of bottom (more sensitive threshold)
+        // Also trigger if already at bottom (distanceToBottom <= 0) to handle initial load
+        const threshold = 500;
+        
+        if (distanceToBottom <= threshold) {
+            // Only trigger if scrolled down (not up) to avoid loading on scroll up
+            if (scrollTop > lastScrollTop && !isLoadingMore) {
+                loadMoreResults();
             }
-            loadMoreResults();
-        }
-    };
-    
-    // Use requestAnimationFrame for smooth scrolling detection
-    const scrollHandler = () => {
-        if (rafId !== null) {
-            return; // Already scheduled
         }
         
-        rafId = window.requestAnimationFrame(() => {
-            handleScroll();
-            rafId = null;
-        });
+        lastScrollTop = scrollTop;
+        ticking = false;
     };
     
-    // Add throttling with passive listener for better performance
+    // Simplified scroll handler with throttling
+    const scrollHandler = () => {
+        if (!ticking) {
+            window.requestAnimationFrame(handleScroll);
+            ticking = true;
+        }
+    };
+    
+    // Use simpler throttling - check every 100ms for better responsiveness
     let throttleTimeout;
     const throttledHandler = () => {
         if (throttleTimeout) {
-            return; // Skip if already scheduled
+            return;
         }
         throttleTimeout = setTimeout(() => {
             scrollHandler();
             throttleTimeout = null;
-        }, 150); // Throttle to 150ms for smoother experience
+        }, 100); // Reduced from 150ms to 100ms for faster response
     };
     
     window.addEventListener('scroll', throttledHandler, { passive: true });
     
-    // Store listener and cleanup function for removal
+    // Store listener for removal
     window._infiniteScrollHandler = throttledHandler;
-    window._infiniteScrollRafId = rafId;
+    window._infiniteScrollThrottleTimeout = throttleTimeout;
 }
 
 /**
@@ -302,10 +310,10 @@ function removeInfiniteScroll() {
         window._infiniteScrollHandler = null;
     }
     
-    // Cancel any pending requestAnimationFrame
-    if (window._infiniteScrollRafId !== null && window._infiniteScrollRafId !== undefined) {
-        window.cancelAnimationFrame(window._infiniteScrollRafId);
-        window._infiniteScrollRafId = null;
+    // Clear throttle timeout
+    if (window._infiniteScrollThrottleTimeout) {
+        clearTimeout(window._infiniteScrollThrottleTimeout);
+        window._infiniteScrollThrottleTimeout = null;
     }
 }
 
@@ -328,11 +336,17 @@ async function loadMoreResults() {
         // Load next page
         const nextPage = currentPage + 1;
         await handleSearch(nextPage, currentQuery, true);
+        
+        // Note: isLoadingMore will be reset in displayResults() after successful load
+        // If no more results, hasMoreResults will be set to false
     } catch (error) {
         console.error('Error loading more results:', error);
         // Remove loading indicator on error
         removeInfiniteScrollLoading();
         isLoadingMore = false;
+        
+        // Show error message to user (optional, can be removed if too intrusive)
+        // await alert('加载更多失败，请稍后重试', '加载错误');
     }
 }
 

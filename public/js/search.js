@@ -108,15 +108,28 @@ export async function handleSearch(page = 1, queryOverride = null, append = fals
             // Display results with pagination info.
             displayResults(data.results.tracks.items, data.pagination, append);
         } else {
+            // No results found
             if (page === 1) {
                 await alert('No songs found. Please try different keywords.', '未找到结果');
+                hideLoading();
+            } else {
+                // For infinite scroll: no more results on this page
+                // Call displayResults with empty array to update state properly
+                // Use current page info from results module
+                displayResults([], { total: 0, hasMore: false, offset: (page - 1) * PAGE_SIZE }, append);
             }
-            hideLoading();
         }
     } catch (error) {
         console.error('Search error:', error);
-        await alert('Search error: ' + error.message, '搜索错误');
-        hideLoading();
+        
+        // For infinite scroll append mode, show less intrusive error
+        if (append) {
+            // Just log and reset state, don't show alert for append failures
+            hideLoading();
+        } else {
+            await alert('Search error: ' + error.message, '搜索错误');
+            hideLoading();
+        }
     }
 }
 
