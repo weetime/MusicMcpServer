@@ -14,6 +14,21 @@ body {
     padding: 0;
     padding-bottom: 100px; /* Add bottom padding for fixed player */
     overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Responsive body padding */
+@media (max-width: 768px) {
+    body {
+        padding-bottom: 90px; /* Adjust for mobile player height */
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding-bottom: 80px; /* Further adjust for small mobile */
+    }
 }
 
 /* Container */
@@ -25,6 +40,28 @@ body {
     padding-top: 300px; /* Space for fixed header and search */
     box-sizing: border-box;
     overflow-x: hidden;
+}
+
+/* Responsive Container */
+@media (max-width: 1024px) {
+    .container {
+        padding: 30px 40px;
+        padding-top: 280px;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 20px;
+        padding-top: 200px; /* Reduced for mobile */
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 16px;
+        padding-top: 180px; /* Further reduced for small mobile */
+    }
 }
 
 /* Utility Classes */

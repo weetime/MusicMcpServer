@@ -307,3 +307,233 @@
     opacity: 1;
 }
 
+/* Responsive adjustments for Player */
+@media (max-width: 1024px) {
+    .music-player {
+        padding: 0 20px;
+    }
+    
+    .player-volume-container {
+        width: 110px;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Mobile Player Adjustments */
+    .music-player {
+        height: 80px;
+        padding: 0 12px;
+        flex-wrap: nowrap;
+    }
+    
+    .player-left {
+        min-width: 35%;
+        max-width: 35%;
+        gap: 10px;
+        flex-shrink: 0;
+    }
+    
+    .player-album-art {
+        width: 48px;
+        height: 48px;
+        flex-shrink: 0;
+    }
+    
+    .player-track-info {
+        min-width: 0;
+        overflow: hidden;
+    }
+    
+    .player-track-name {
+        font-size: 0.8125rem;
+    }
+    
+    .player-track-artist {
+        font-size: 0.6875rem;
+    }
+    
+    .player-add-btn {
+        width: 28px;
+        height: 28px;
+        flex-shrink: 0;
+    }
+    
+    .player-center {
+        max-width: 30%;
+        min-width: 0;
+        gap: 6px;
+        flex: 1;
+    }
+    
+    .player-controls-main {
+        gap: 10px;
+    }
+    
+    .player-control-btn {
+        width: 28px;
+        height: 28px;
+        flex-shrink: 0;
+    }
+    
+    .player-control-btn svg {
+        width: 16px;
+        height: 16px;
+    }
+    
+    .play-btn-main {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .play-btn-main span {
+        font-size: 16px;
+    }
+    
+    .player-progress-container {
+        gap: 8px;
+        max-width: 100%;
+    }
+    
+    .player-time {
+        font-size: 0.625rem;
+        min-width: 30px;
+    }
+    
+    .player-progress-bar {
+        height: 3px;
+    }
+    
+    .player-progress-bar:hover {
+        height: 4px;
+    }
+    
+    .player-right {
+        min-width: 35%;
+        max-width: 35%;
+        gap: 6px;
+        justify-content: flex-end;
+        flex-shrink: 0;
+    }
+    
+    .player-volume-container {
+        width: 70px;
+        display: none; /* Hide volume on mobile to save space */
+    }
+    
+    .player-icon-btn {
+        width: 28px;
+        height: 28px;
+        flex-shrink: 0;
+    }
+    
+    .player-icon-btn svg {
+        width: 16px;
+        height: 16px;
+    }
+    
+    .queue-btn {
+        display: none; /* Hide queue button on mobile */
+    }
+}
+
+@media (max-width: 480px) {
+    .music-player {
+        height: 70px;
+        padding: 0 10px;
+    }
+    
+    .player-left {
+        min-width: 40%;
+        max-width: 40%;
+        gap: 8px;
+    }
+    
+    .player-album-art {
+        width: 44px;
+        height: 44px;
+    }
+    
+    .player-track-name {
+        font-size: 0.75rem;
+    }
+    
+    .player-track-artist {
+        font-size: 0.625rem;
+    }
+    
+    .player-add-btn {
+        width: 24px;
+        height: 24px;
+        display: none; /* Hide add button on small mobile */
+    }
+    
+    .player-center {
+        max-width: 35%;
+        gap: 4px;
+    }
+    
+    .player-controls-main {
+        gap: 8px;
+    }
+    
+    .player-control-btn {
+        width: 24px;
+        height: 24px;
+    }
+    
+    .player-control-btn svg {
+        width: 14px;
+        height: 14px;
+    }
+    
+    .play-btn-main {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .play-btn-main span {
+        font-size: 14px;
+    }
+    
+    .player-progress-container {
+        gap: 6px;
+    }
+    
+    .player-time {
+        font-size: 0.5625rem;
+        min-width: 28px;
+    }
+    
+    .player-progress-bar {
+        height: 2px;
+    }
+    
+    .player-progress-bar:hover {
+        height: 3px;
+    }
+    
+    .player-right {
+        min-width: 25%;
+        max-width: 25%;
+        gap: 4px;
+    }
+    
+    .player-icon-btn {
+        width: 24px;
+        height: 24px;
+    }
+    
+    .player-icon-btn svg {
+        width: 14px;
+        height: 14px;
+    }
+    
+    .lyrics-btn {
+        display: flex; /* Keep lyrics button visible */
+    }
+    
+    .closePlayer {
+        display: flex; /* Keep close button visible */
+    }
+}
+

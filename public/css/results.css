@@ -333,3 +333,148 @@
 .album-title-bg.color-5 { background: #FF8C00; }
 .album-title-bg.color-6 { background: #87CEEB; }
 
+/* Responsive adjustments for Results */
+@media (max-width: 1024px) {
+    .results-grid {
+        grid-template-columns: repeat(4, minmax(160px, 1fr));
+        gap: 18px;
+    }
+    
+    .result-card {
+        width: 160px;
+        min-width: 160px;
+        max-width: 160px;
+    }
+    
+    .album-art-wrapper {
+        max-width: 128px;
+    }
+}
+
+@media (max-width: 768px) {
+    .results-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        margin-bottom: 20px;
+    }
+    
+    .results-title {
+        font-size: 1.25rem;
+    }
+    
+    .results-count {
+        font-size: 0.9rem;
+    }
+    
+    .results-wrapper {
+        gap: 8px;
+    }
+    
+    .results-nav-btn {
+        width: 40px;
+        height: 40px;
+        min-width: 40px;
+    }
+    
+    .results-nav-btn svg {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .results-grid {
+        grid-template-columns: repeat(3, minmax(140px, 1fr));
+        grid-template-rows: auto;
+        gap: 16px;
+    }
+    
+    .result-card {
+        width: 140px;
+        min-width: 140px;
+        max-width: 140px;
+        padding: 14px;
+    }
+    
+    .album-art-wrapper {
+        max-width: 108px;
+        margin: 0 auto 14px;
+    }
+    
+    .album-title-bg {
+        padding: 10px;
+        font-size: 0.85rem;
+        margin-bottom: 6px;
+    }
+    
+    .play-button {
+        width: 48px;
+        height: 48px;
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .results-header {
+        margin-bottom: 16px;
+    }
+    
+    .results-title {
+        font-size: 1.125rem;
+    }
+    
+    .results-count {
+        font-size: 0.875rem;
+    }
+    
+    .results-wrapper {
+        gap: 6px;
+    }
+    
+    .results-nav-btn {
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
+    }
+    
+    .results-nav-btn svg {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .results-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+        padding-bottom: 8px;
+    }
+    
+    .result-card {
+        width: 100%;
+        min-width: 0;
+        max-width: 100%;
+        padding: 12px;
+    }
+    
+    .album-art-wrapper {
+        max-width: 100%;
+        padding-bottom: 100%;
+        margin: 0 auto 12px;
+    }
+    
+    .album-title-bg {
+        padding: 8px;
+        font-size: 0.8rem;
+        margin-bottom: 4px;
+    }
+    
+    .play-button {
+        width: 44px;
+        height: 44px;
+        font-size: 18px;
+    }
+    
+    .artist-name-overlay {
+        font-size: 0.875rem;
+        padding: 0 12px;
+    }
+}
+
