@@ -3,6 +3,12 @@
 ## [Unreleased]
 
 ### Added
+- 🚀 **移动端无限加载优化** - 优化移动端无限滚动加载性能和响应速度
+  - 简化滚动检测逻辑，减少延迟（从 150ms 降低到 100ms）
+  - 优化触发阈值（从 400px 增加到 500px，更早触发加载）
+  - 改进 hasMoreResults 计算逻辑，更准确判断是否还有更多结果
+  - 优化错误处理，避免加载状态卡住
+  - 移除双重节流，使用更简洁的 requestAnimationFrame 方案
 - 🔒 **安全性改进** - 修复 innerHTML XSS 风险，使用 DOM API 替代
   - 修复 `modal.js` 中的 innerHTML 使用，改用 DOM API
   - 修复 `instruments.js` 中的 innerHTML 使用，改用 DOM API
