@@ -52,6 +52,13 @@ export const dom = {
     // Instruments channel elements.
     instrumentsBtn: document.getElementById('instrumentsBtn'),
     instrumentsDropdown: document.getElementById('instrumentsDropdown'),
-    instrumentsContent: document.getElementById('instrumentsContent')
+    instrumentsContent: document.getElementById('instrumentsContent'),
+    
+    // Pagination elements.
+    paginationContainer: document.getElementById('paginationContainer'),
+    
+    // Player control elements.
+    shuffleBtn: document.getElementById('shuffleBtn'),
+    repeatBtn: document.getElementById('repeatBtn')
 };
 

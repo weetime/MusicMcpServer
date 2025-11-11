@@ -1,0 +1,122 @@
+/**
+ * Responsive Breakpoints System
+ * Mobile First Approach - Base styles for mobile, then enhance for larger screens
+ * 
+ * Breakpoint Strategy:
+ * - Mobile: < 480px (default, no media query needed)
+ * - Small Mobile: 480px - 767px
+ * - Tablet: 768px - 1023px
+ * - Desktop: 1024px - 1439px
+ * - Large Desktop: >= 1440px
+ */
+
+/* ============================================
+   BREAKPOINT VARIABLES (using CSS custom properties)
+   ============================================ */
+:root {
+    /* Breakpoint values */
+    --bp-mobile-max: 479px;
+    --bp-tablet-min: 768px;
+    --bp-tablet-max: 1023px;
+    --bp-desktop-min: 1024px;
+    --bp-desktop-max: 1439px;
+    --bp-large-desktop-min: 1440px;
+    
+    /* Layout spacing */
+    --spacing-xs: 8px;
+    --spacing-sm: 12px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+    --spacing-2xl: 48px;
+    
+    /* Header heights (will be calculated dynamically) */
+    --header-height-mobile: 60px;
+    --header-height-tablet: 70px;
+    --header-height-desktop: 120px;
+    
+    /* Search bar heights */
+    --search-bar-height-mobile: 160px;
+    --search-bar-height-tablet: 170px;
+    --search-bar-height-desktop: 200px;
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+/* Hide on mobile, show on tablet+ */
+.hide-mobile {
+    display: none;
+}
+
+@media (min-width: 768px) {
+    .hide-mobile {
+        display: block;
+    }
+    
+    .hide-mobile-inline {
+        display: inline;
+    }
+    
+    .hide-mobile-flex {
+        display: flex;
+    }
+}
+
+/* Show on mobile, hide on tablet+ */
+.show-mobile {
+    display: block;
+}
+
+@media (min-width: 768px) {
+    .show-mobile {
+        display: none !important;
+    }
+}
+
+/* ============================================
+   GLOBAL RESPONSIVE UTILITIES
+   ============================================ */
+
+/* Mobile First: Base styles (mobile) */
+* {
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 14px; /* Base font size for mobile */
+}
+
+/* Tablet and up */
+@media (min-width: 768px) {
+    html {
+        font-size: 15px;
+    }
+}
+
+/* Desktop and up */
+@media (min-width: 1024px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+/* Prevent horizontal scroll on all devices */
+html, body {
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
+}
+
+/* Touch-friendly interactions on mobile */
+@media (max-width: 767px) {
+    button,
+    .result-card,
+    .instrument-card,
+    a {
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+        touch-action: manipulation;
+    }
+}
+

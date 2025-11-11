@@ -12,55 +12,66 @@ body {
     min-height: 100vh;
     color: var(--text-primary);
     padding: 0;
-    padding-bottom: 100px; /* Add bottom padding for fixed player */
+    padding-bottom: 0;
     overflow-x: hidden;
+    overflow-y: auto;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* Hide scrollbar but keep scroll functionality */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
 }
 
-/* Responsive body padding */
-@media (max-width: 768px) {
-    body {
-        padding-bottom: 90px; /* Adjust for mobile player height */
-    }
+/* Hide scrollbar for WebKit browsers */
+body::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
 }
 
-@media (max-width: 480px) {
-    body {
-        padding-bottom: 80px; /* Further adjust for small mobile */
-    }
-}
+/* Responsive body - no extra padding needed, player is fixed */
 
 /* Container */
+/* Mobile First: Base styles for mobile */
 .container {
     width: 100%;
-    max-width: 1400px;
+    max-width: 100%;
     margin: 0 auto;
-    padding: 40px 60px;
-    padding-top: 300px; /* Space for fixed header and search */
+    padding: 16px;
+    padding-top: calc(var(--header-height, 60px) + var(--search-bar-height, 160px) + 20px);
+    padding-bottom: 0;
+    min-height: calc(100vh - var(--header-height, 60px) - var(--search-bar-height, 160px) - 100px);
     box-sizing: border-box;
     overflow-x: hidden;
+    transition: padding-top 0.2s ease;
 }
 
-/* Responsive Container */
-@media (max-width: 1024px) {
-    .container {
-        padding: 30px 40px;
-        padding-top: 280px;
-    }
-}
-
-@media (max-width: 768px) {
+/* Tablet: 768px and up */
+@media (min-width: 768px) {
     .container {
         padding: 20px;
-        padding-top: 200px; /* Reduced for mobile */
+        padding-top: calc(var(--header-height, 70px) + var(--search-bar-height, 170px) + 20px);
+        padding-bottom: 0;
+        min-height: calc(100vh - var(--header-height, 70px) - var(--search-bar-height, 170px) - 90px);
     }
 }
 
-@media (max-width: 480px) {
+/* Desktop: 1024px and up */
+@media (min-width: 1024px) {
     .container {
-        padding: 16px;
-        padding-top: 180px; /* Further reduced for small mobile */
+        max-width: 1400px;
+        padding: 30px 40px;
+        padding-top: calc(var(--header-height, 120px) + var(--search-bar-height, 200px) + 20px);
+        padding-bottom: 0;
+        min-height: calc(100vh - var(--header-height, 120px) - var(--search-bar-height, 200px) - 90px);
+    }
+}
+
+/* Large Desktop: 1440px and up */
+@media (min-width: 1440px) {
+    .container {
+        padding: 40px 60px;
+        padding-bottom: 0;
     }
 }
 

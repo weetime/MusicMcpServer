@@ -60,10 +60,18 @@ export async function renderInstruments(container) {
         
         const labelDiv = document.createElement('div');
         labelDiv.className = 'instrument-label';
-        labelDiv.innerHTML = `
-            <div class="instrument-chinese">${instrument.chinese}</div>
-            <div class="instrument-name">${instrument.name}</div>
-        `;
+        
+        // Use DOM API instead of innerHTML for security.
+        const chineseDiv = document.createElement('div');
+        chineseDiv.className = 'instrument-chinese';
+        chineseDiv.textContent = instrument.chinese;
+        
+        const nameDiv = document.createElement('div');
+        nameDiv.className = 'instrument-name';
+        nameDiv.textContent = instrument.name;
+        
+        labelDiv.appendChild(chineseDiv);
+        labelDiv.appendChild(nameDiv);
         
         instrumentCard.appendChild(iconDiv);
         instrumentCard.appendChild(labelDiv);
@@ -75,6 +83,16 @@ export async function renderInstruments(container) {
             handleInstrumentSearch(searchQuery);
             // Close dropdown after selection.
             hideInstrumentsDropdown();
+        });
+        
+        // Add keyboard support for accessibility.
+        instrumentCard.setAttribute('role', 'menuitem');
+        instrumentCard.setAttribute('tabindex', '0');
+        instrumentCard.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                instrumentCard.click();
+            }
         });
         
         instrumentsGrid.appendChild(instrumentCard);
@@ -89,8 +107,12 @@ export async function renderInstruments(container) {
  */
 export function showInstrumentsDropdown() {
     const dropdown = document.getElementById('instrumentsDropdown');
+    const btn = document.getElementById('instrumentsBtn');
     if (dropdown) {
         dropdown.classList.remove('hidden');
+        if (btn) {
+            btn.setAttribute('aria-expanded', 'true');
+        }
     }
 }
 
@@ -99,8 +121,12 @@ export function showInstrumentsDropdown() {
  */
 export function hideInstrumentsDropdown() {
     const dropdown = document.getElementById('instrumentsDropdown');
+    const btn = document.getElementById('instrumentsBtn');
     if (dropdown) {
         dropdown.classList.add('hidden');
+        if (btn) {
+            btn.setAttribute('aria-expanded', 'false');
+        }
     }
 }
 

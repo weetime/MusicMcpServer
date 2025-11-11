@@ -1,16 +1,20 @@
 /* Fixed Top Header */
+/* Mobile First: Base styles for mobile */
 .fixed-header {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     background: var(--bg-primary);
-    padding: 24px 60px;
+    padding: 12px 16px;
     z-index: 999;
     border-bottom: 1px solid var(--border-primary);
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
+    gap: 8px;
+    min-height: 60px;
 }
 
 .header-content {
@@ -20,17 +24,69 @@
 }
 
 .title {
-    font-size: 2.5rem;
+    font-size: 1.5rem; /* Mobile first */
     font-weight: 700;
     color: var(--text-primary);
-    margin-bottom: 8px;
+    margin-bottom: 4px;
     letter-spacing: -0.5px;
 }
 
 .subtitle {
-    font-size: 1rem;
+    font-size: 0.875rem; /* Mobile first */
     font-weight: 400;
     color: var(--text-secondary);
+    display: none; /* Hidden on mobile */
+}
+
+/* Tablet: 768px and up */
+@media (min-width: 768px) {
+    .fixed-header {
+        padding: 16px 20px;
+        min-height: 70px;
+    }
+    
+    .title {
+        font-size: 1.75rem;
+        margin-bottom: 4px;
+    }
+    
+    .subtitle {
+        display: block;
+        font-size: 0.875rem;
+    }
+}
+
+/* Desktop: 1024px and up */
+@media (min-width: 1024px) {
+    .fixed-header {
+        padding: 20px 40px;
+        flex-wrap: nowrap;
+        min-height: auto;
+    }
+    
+    .title {
+        font-size: 2.25rem;
+        margin-bottom: 8px;
+    }
+    
+    .subtitle {
+        font-size: 0.95rem;
+    }
+}
+
+/* Large Desktop: 1440px and up */
+@media (min-width: 1440px) {
+    .fixed-header {
+        padding: 24px 60px;
+    }
+    
+    .title {
+        font-size: 2.5rem;
+    }
+    
+    .subtitle {
+        font-size: 1rem;
+    }
 }
 
 /* Header Actions */
@@ -238,47 +294,46 @@
     color: var(--accent-primary);
 }
 
-/* Responsive adjustments for Header */
-@media (max-width: 1024px) {
-    .fixed-header {
-        padding: 20px 40px;
-    }
-    
-    .title {
-        font-size: 2.25rem;
-    }
-    
-    .subtitle {
-        font-size: 0.95rem;
-    }
+/* Mobile First: Header Actions and Buttons */
+.header-content {
+    flex: 1 1 100%;
+    min-width: 0;
 }
 
-@media (max-width: 768px) {
-    .fixed-header {
-        padding: 16px 20px;
-        flex-wrap: wrap;
-        gap: 12px;
-    }
-    
+.header-actions {
+    flex: 1 1 100%;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.instruments-btn {
+    padding: 6px 10px;
+    font-size: 0.8125rem;
+}
+
+.instruments-btn-text {
+    font-size: 0.8125rem;
+}
+
+.theme-btn {
+    width: 32px;
+    height: 32px;
+}
+
+.theme-icon {
+    width: 18px;
+    height: 18px;
+}
+
+/* Tablet: 768px and up */
+@media (min-width: 768px) {
     .header-content {
-        flex: 1 1 100%;
-        min-width: 0;
-    }
-    
-    .title {
-        font-size: 1.75rem;
-        margin-bottom: 4px;
-    }
-    
-    .subtitle {
-        font-size: 0.875rem;
-        display: none; /* Hide subtitle on mobile to save space */
+        flex: 1;
     }
     
     .header-actions {
-        flex: 1 1 100%;
-        justify-content: flex-end;
-        gap: 8px;
+        flex: 0 0 auto;
+        gap: 12px;
     }
     
     .instruments-btn {
@@ -295,59 +350,47 @@
         height: 36px;
     }
     
-    .instruments-dropdown {
-        width: calc(100vw - 40px);
-        max-width: 560px;
-        right: auto;
-        left: 50%;
-        transform: translateX(-50%);
+    .theme-icon {
+        width: 20px;
+        height: 20px;
     }
     
-    .theme-dropdown {
-        right: 0;
-        width: 180px;
+    .instruments-dropdown {
+        position: fixed !important;
+        width: calc(100vw - 40px);
+        max-width: 560px;
+        max-height: 75vh;
+        top: 50% !important;
+        left: 50% !important;
+        right: auto !important;
+        transform: translate(-50%, -50%) !important;
     }
 }
 
-@media (max-width: 480px) {
-    .fixed-header {
-        padding: 12px 16px;
-    }
-    
-    .title {
-        font-size: 1.5rem;
+/* Desktop: 1024px and up */
+@media (min-width: 1024px) {
+    .header-actions {
+        gap: 12px;
     }
     
     .instruments-btn {
-        padding: 6px 10px;
-        font-size: 0.8125rem;
-    }
-    
-    .instruments-btn-text {
-        font-size: 0.8125rem;
+        padding: 8px 16px;
+        font-size: 0.9375rem;
     }
     
     .theme-btn {
-        width: 32px;
-        height: 32px;
-    }
-    
-    .theme-icon {
-        width: 18px;
-        height: 18px;
+        width: 40px;
+        height: 40px;
     }
     
     .instruments-dropdown {
-        width: calc(100vw - 32px);
-        max-height: 70vh;
-    }
-    
-    .instruments-dropdown-content {
-        max-height: 70vh;
-    }
-    
-    .theme-dropdown {
-        width: 160px;
+        position: absolute !important;
+        top: calc(100% + 8px) !important;
+        right: 0 !important;
+        left: auto !important;
+        transform: none !important;
+        width: 640px;
+        max-height: 520px;
     }
 }
 

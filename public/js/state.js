@@ -8,6 +8,8 @@ export let currentTrack = null;
 export let currentTrackIndex = -1; // Index of current track in playlist.
 export let playlist = []; // Playlist array to store search results.
 export let isPlaying = false;
+export let isShuffle = false; // Shuffle mode state.
+export let repeatMode = 'off'; // Repeat mode: 'off', 'all', 'one'
 
 // Constants.
 export const MAX_HISTORY_ITEMS = 10; // Maximum number of search history items to display.
@@ -51,5 +53,21 @@ export function setPlaylist(tracks) {
  */
 export function setIsPlaying(playing) {
     isPlaying = playing;
+}
+
+/**
+ * Sets the shuffle mode.
+ * @param {boolean} shuffle - Whether shuffle mode is enabled.
+ */
+export function setIsShuffle(shuffle) {
+    isShuffle = shuffle;
+}
+
+/**
+ * Sets the repeat mode.
+ * @param {string} mode - Repeat mode: 'off', 'all', 'one'.
+ */
+export function setRepeatMode(mode) {
+    repeatMode = mode;
 }
 

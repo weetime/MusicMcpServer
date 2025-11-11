@@ -15,9 +15,11 @@
     transition: transform 0.3s ease;
 }
 
-/* Special handling for fixed player - use transform instead of display */
+/* Special handling for fixed player - completely hide when closed */
 .music-player.hidden {
-    display: flex !important;
+    display: none !important;
+    visibility: hidden;
+    opacity: 0;
     transform: translateY(100%);
 }
 
@@ -80,26 +82,7 @@
     text-decoration: underline;
 }
 
-.player-add-btn {
-    width: 32px;
-    height: 32px;
-    border: none;
-    background: transparent;
-    color: var(--text-secondary);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    transition: all 0.2s ease;
-    flex-shrink: 0;
-}
-
-.player-add-btn:hover {
-    color: var(--text-primary);
-    background: var(--bg-hover);
-    transform: scale(1.1);
-}
+/* Removed player-add-btn - no longer needed */
 
 /* Player Center Section - Controls & Progress */
 .player-center {
@@ -137,6 +120,15 @@
 .player-control-btn:hover {
     color: var(--text-primary);
     transform: scale(1.1);
+}
+
+/* Active state for shuffle and repeat buttons */
+.player-control-btn.active {
+    color: var(--accent-primary);
+}
+
+.player-control-btn.active:hover {
+    color: var(--accent-hover);
 }
 
 .play-btn-main {
@@ -352,11 +344,7 @@
         font-size: 0.6875rem;
     }
     
-    .player-add-btn {
-        width: 28px;
-        height: 28px;
-        flex-shrink: 0;
-    }
+    /* Removed player-add-btn - no longer needed */
     
     .player-center {
         max-width: 30%;
@@ -461,11 +449,7 @@
         font-size: 0.625rem;
     }
     
-    .player-add-btn {
-        width: 24px;
-        height: 24px;
-        display: none; /* Hide add button on small mobile */
-    }
+    /* Removed player-add-btn - no longer needed */
     
     .player-center {
         max-width: 35%;

@@ -9,14 +9,35 @@ import {
     currentTrackIndex, 
     playlist, 
     isPlaying,
+    isShuffle,
+    repeatMode,
     setCurrentTrack,
     setCurrentTrackIndex,
-    setIsPlaying
+    setIsPlaying,
+    setIsShuffle,
+    setRepeatMode
 } from './state.js';
 import { qualityNames } from './state.js';
 import { formatTime } from './utils.js';
 import { fetchLyrics, updateLyrics, clearLyrics } from './lyrics.js';
 import { alert } from './modal.js';
+
+/**
+ * Updates search results padding based on player visibility.
+ */
+function updateSearchResultsPadding() {
+    const searchResults = document.querySelector('.search-results');
+    const musicPlayer = document.querySelector('.music-player');
+    
+    if (searchResults && musicPlayer) {
+        const isPlayerHidden = musicPlayer.classList.contains('hidden');
+        if (isPlayerHidden) {
+            searchResults.classList.add('no-player-padding');
+        } else {
+            searchResults.classList.remove('no-player-padding');
+        }
+    }
+}
 
 /**
  * Plays the selected track.
@@ -48,6 +69,8 @@ export async function playTrack(track) {
     
     // Show fixed bottom player.
     dom.musicPlayer.classList.remove('hidden');
+    // Update search results padding when player is shown
+    updateSearchResultsPadding();
     
     try {
         // All tracks are Netease tracks (preview_url format: "netease:SONG_ID").
@@ -77,6 +100,10 @@ export async function playTrack(track) {
         
         setIsPlaying(true);
         updatePlayPauseIcon();
+        
+        // Update shuffle and repeat button states
+        updateShuffleButton();
+        updateRepeatButton();
         
         // Fetch lyrics for Netease tracks.
         await fetchLyrics(songId);
@@ -185,13 +212,21 @@ export function updateDuration() {
 
 /**
  * Handles track end.
- * Automatically plays next track if available.
+ * Automatically plays next track based on repeat mode.
  */
 export async function handleTrackEnd() {
     setIsPlaying(false);
     updatePlayPauseIcon();
     dom.progressBar.value = 0;
     dom.currentTime.textContent = '0:00';
+    
+    // Handle repeat one mode - replay current track.
+    if (repeatMode === 'one') {
+        if (currentTrack) {
+            await playTrack(currentTrack);
+        }
+        return;
+    }
     
     // Auto-play next track if available.
     if (playlist.length > 0 && currentTrackIndex >= 0) {
@@ -221,6 +256,9 @@ export function closePlayerPanel() {
     setCurrentTrack(null);
     setCurrentTrackIndex(-1);
     
+    // Update search results padding when player is hidden
+    updateSearchResultsPadding();
+    
     // Clear lyrics when closing player.
     clearLyrics();
 }
@@ -232,11 +270,23 @@ export async function playPreviousTrack() {
     if (playlist.length === 0) return;
     
     let newIndex;
-    if (currentTrackIndex <= 0) {
-        // If at the beginning, loop to the end.
-        newIndex = playlist.length - 1;
+    
+    if (isShuffle) {
+        // Shuffle mode: play random track
+        newIndex = Math.floor(Math.random() * playlist.length);
     } else {
-        newIndex = currentTrackIndex - 1;
+        // Normal mode: play previous track
+        if (currentTrackIndex <= 0) {
+            // If at the beginning, check repeat mode
+            if (repeatMode === 'all') {
+                newIndex = playlist.length - 1;
+            } else {
+                // If repeat is off, stay at first track
+                return;
+            }
+        } else {
+            newIndex = currentTrackIndex - 1;
+        }
     }
     
     setCurrentTrackIndex(newIndex);
@@ -253,17 +303,123 @@ export async function playNextTrack() {
     if (playlist.length === 0) return;
     
     let newIndex;
-    if (currentTrackIndex >= playlist.length - 1) {
-        // If at the end, loop to the beginning.
-        newIndex = 0;
+    
+    if (isShuffle) {
+        // Shuffle mode: play random track (avoid same track if possible)
+        if (playlist.length === 1) {
+            newIndex = 0;
+        } else {
+            do {
+                newIndex = Math.floor(Math.random() * playlist.length);
+            } while (newIndex === currentTrackIndex && playlist.length > 1);
+        }
     } else {
-        newIndex = currentTrackIndex + 1;
+        // Normal mode: play next track
+        if (currentTrackIndex >= playlist.length - 1) {
+            // If at the end, check repeat mode
+            if (repeatMode === 'all') {
+                newIndex = 0;
+            } else {
+                // If repeat is off, stop at last track
+                setIsPlaying(false);
+                updatePlayPauseIcon();
+                return;
+            }
+        } else {
+            newIndex = currentTrackIndex + 1;
+        }
     }
     
     setCurrentTrackIndex(newIndex);
     const track = playlist[newIndex];
     if (track) {
         await playTrack(track);
+    }
+}
+
+/**
+ * Toggles shuffle mode.
+ */
+export function toggleShuffle() {
+    setIsShuffle(!isShuffle);
+    updateShuffleButton();
+}
+
+/**
+ * Toggles repeat mode.
+ * Cycles through: off -> all -> one -> off
+ */
+export function toggleRepeat() {
+    if (repeatMode === 'off') {
+        setRepeatMode('all');
+    } else if (repeatMode === 'all') {
+        setRepeatMode('one');
+    } else {
+        setRepeatMode('off');
+    }
+    updateRepeatButton();
+}
+
+/**
+ * Updates shuffle button visual state.
+ */
+function updateShuffleButton() {
+    if (!dom.shuffleBtn) return;
+    
+    if (isShuffle) {
+        dom.shuffleBtn.classList.add('active');
+        dom.shuffleBtn.style.color = 'var(--accent-primary)';
+    } else {
+        dom.shuffleBtn.classList.remove('active');
+        dom.shuffleBtn.style.color = '';
+    }
+}
+
+/**
+ * Updates repeat button visual state.
+ */
+function updateRepeatButton() {
+    if (!dom.repeatBtn) return;
+    
+    const repeatIcon = document.getElementById('repeatIcon');
+    if (!repeatIcon) return;
+    
+    // Remove all state classes
+    dom.repeatBtn.classList.remove('repeat-off', 'repeat-all', 'repeat-one');
+    
+    // Update SVG icon and color based on mode
+    if (repeatMode === 'off') {
+        dom.repeatBtn.classList.add('repeat-off');
+        dom.repeatBtn.style.color = '';
+        repeatIcon.innerHTML = `
+            <polyline points="17 1 21 5 17 9"></polyline>
+            <path d="M3 11V9a4 4 0 0 1 4-4h14"></path>
+            <polyline points="7 23 3 19 7 15"></polyline>
+            <path d="M21 13v2a4 4 0 0 1-4 4H3"></path>
+        `;
+        dom.repeatBtn.title = 'Repeat Off';
+    } else if (repeatMode === 'all') {
+        dom.repeatBtn.classList.add('repeat-all');
+        dom.repeatBtn.style.color = 'var(--accent-primary)';
+        repeatIcon.innerHTML = `
+            <polyline points="17 1 21 5 17 9"></polyline>
+            <path d="M3 11V9a4 4 0 0 1 4-4h14"></path>
+            <polyline points="7 23 3 19 7 15"></polyline>
+            <path d="M21 13v2a4 4 0 0 1-4 4H3"></path>
+        `;
+        dom.repeatBtn.title = 'Repeat All';
+    } else if (repeatMode === 'one') {
+        dom.repeatBtn.classList.add('repeat-one');
+        dom.repeatBtn.style.color = 'var(--accent-primary)';
+        // Repeat one icon: add a "1" indicator
+        repeatIcon.innerHTML = `
+            <polyline points="17 1 21 5 17 9"></polyline>
+            <path d="M3 11V9a4 4 0 0 1 4-4h14"></path>
+            <polyline points="7 23 3 19 7 15"></polyline>
+            <path d="M21 13v2a4 4 0 0 1-4 4H3"></path>
+            <circle cx="12" cy="12" r="3" fill="currentColor" opacity="0.8"></circle>
+        `;
+        dom.repeatBtn.title = 'Repeat One';
     }
 }
 
