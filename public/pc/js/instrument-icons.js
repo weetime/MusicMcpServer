@@ -4,17 +4,18 @@
  */
 
 // Icon file path mapping.
+// Note: Paths are relative to root since server maps '/' to 'public/pc'
 const iconPaths = {
-    Erhu: '/pc/icons/instruments/erhu.svg',
-    Guzheng: '/pc/icons/instruments/guzheng.svg',
-    Pipa: '/pc/icons/instruments/pipa.svg',
-    Dizi: '/pc/icons/instruments/dizi.svg',
-    Suona: '/pc/icons/instruments/suona.svg',
-    Hulusi: '/pc/icons/instruments/hulusi.svg',
-    Ocarina: '/pc/icons/instruments/ocarina.svg',
-    Violin: '/pc/icons/instruments/violin.svg',
-    Guitar: '/pc/icons/instruments/guitar.svg',
-    Piano: '/pc/icons/instruments/piano.svg'
+    Erhu: '/icons/instruments/erhu.svg',
+    Guzheng: '/icons/instruments/guzheng.svg',
+    Pipa: '/icons/instruments/pipa.svg',
+    Dizi: '/icons/instruments/dizi.svg',
+    Suona: '/icons/instruments/suona.svg',
+    Hulusi: '/icons/instruments/hulusi.svg',
+    Ocarina: '/icons/instruments/ocarina.svg',
+    Violin: '/icons/instruments/violin.svg',
+    Guitar: '/icons/instruments/guitar.svg',
+    Piano: '/icons/instruments/piano.svg'
 };
 
 // Cache for loaded SVG content.
