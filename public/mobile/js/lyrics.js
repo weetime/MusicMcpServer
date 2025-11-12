@@ -118,6 +118,11 @@ export async function fetchLyrics(songId) {
             renderLyrics();
         }
         
+        // Render lyrics in fullscreen player if it's open.
+        if (dom.fullscreenPlayer && dom.fullscreenPlayer.classList.contains('active')) {
+            renderFullscreenLyrics();
+        }
+        
         return lyricsData;
     } catch (error) {
         console.error('Failed to fetch lyrics:', error);
@@ -145,6 +150,8 @@ export function updateLyrics(currentTime) {
     if (newIndex !== currentLyricIndex) {
         currentLyricIndex = newIndex;
         renderLyrics();
+        // Also update fullscreen player lyrics.
+        renderFullscreenLyrics();
     }
 }
 
@@ -206,6 +213,9 @@ export function clearLyrics() {
     if (dom.lyricsContainer) {
         dom.lyricsContainer.innerHTML = '<div class="lyrics-empty">暂无歌词</div>';
     }
+    if (dom.fullscreenLyricsContent) {
+        dom.fullscreenLyricsContent.innerHTML = '<div class="lyrics-empty">暂无歌词</div>';
+    }
 }
 
 /**
@@ -238,6 +248,54 @@ export function toggleLyrics() {
         if (isHidden && lyricsData && lyricsData.length > 0) {
             renderLyrics();
         }
+    }
+}
+
+/**
+ * Renders lyrics in the fullscreen player.
+ */
+export function renderFullscreenLyrics() {
+    if (!dom.fullscreenLyricsContent) return;
+    
+    if (!lyricsData || lyricsData.length === 0) {
+        dom.fullscreenLyricsContent.innerHTML = '<div class="lyrics-empty">暂无歌词</div>';
+        return;
+    }
+    
+    // Create lyrics HTML.
+    const lyricsHTML = lyricsData.map((item, index) => {
+        const isActive = index === currentLyricIndex;
+        const activeClass = isActive ? 'active' : '';
+        const ttextHTML = item.ttext ? `<div class="lyric-translation">${escapeHtml(item.ttext)}</div>` : '';
+        
+        return `
+            <div class="lyric-line ${activeClass}" data-index="${index}">
+                <div class="lyric-text">${escapeHtml(item.text)}</div>
+                ${ttextHTML}
+            </div>
+        `;
+    }).join('');
+    
+    dom.fullscreenLyricsContent.innerHTML = lyricsHTML;
+    
+    // Scroll to active line.
+    if (currentLyricIndex >= 0) {
+        scrollToFullscreenActiveLine();
+    }
+}
+
+/**
+ * Scrolls to the active lyric line in fullscreen player.
+ */
+function scrollToFullscreenActiveLine() {
+    if (!dom.fullscreenLyricsContent || currentLyricIndex < 0) return;
+    
+    const activeLine = dom.fullscreenLyricsContent.querySelector(`.lyric-line[data-index="${currentLyricIndex}"]`);
+    if (activeLine) {
+        activeLine.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center'
+        });
     }
 }
 

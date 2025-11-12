@@ -24,7 +24,10 @@ import {
     playNextTrack,
     updateVolumeIcon,
     toggleShuffle,
-    toggleRepeat
+    toggleRepeat,
+    openFullscreenPlayer,
+    closeFullscreenPlayer,
+    handleFullscreenProgressChange
 } from './player.js';
 import { togglePlaylist, renderPlaylist } from './playlist.js';
 import { toggleLyrics } from './lyrics.js';
@@ -150,8 +153,32 @@ function init() {
             togglePlaylist();
         });
     }
-    dom.playPauseBtn.addEventListener('click', togglePlayPause);
-    dom.progressBar.addEventListener('input', handleProgressChange);
+    
+    // Click player bar to open fullscreen player (except buttons).
+    if (dom.musicPlayer) {
+        dom.musicPlayer.addEventListener('click', (e) => {
+            // Don't open fullscreen if clicking on buttons.
+            if (e.target.closest('button')) {
+                return;
+            }
+            // Don't open if fullscreen player is already open.
+            if (dom.fullscreenPlayer && dom.fullscreenPlayer.classList.contains('active')) {
+                return;
+            }
+            // Open fullscreen player.
+            openFullscreenPlayer();
+        });
+    }
+    
+    dom.playPauseBtn.addEventListener('click', (e) => {
+        e.stopPropagation(); // Prevent opening fullscreen when clicking play/pause.
+        togglePlayPause();
+    });
+    
+    // Progress bar (may not exist in mobile player bar).
+    if (dom.progressBar) {
+        dom.progressBar.addEventListener('input', handleProgressChange);
+    }
     
     // Volume bar (only if exists - mobile may not have it).
     if (dom.volumeBar) {
@@ -218,6 +245,52 @@ function init() {
             }
         });
     }
+    
+    // Fullscreen player events.
+    if (dom.fullscreenPlayerBackBtn) {
+        dom.fullscreenPlayerBackBtn.addEventListener('click', closeFullscreenPlayer);
+    }
+    
+    // Fullscreen player play/pause button.
+    if (dom.fullscreenPlayPauseBtn) {
+        dom.fullscreenPlayPauseBtn.addEventListener('click', togglePlayPause);
+    }
+    
+    // Fullscreen player progress bar.
+    if (dom.fullscreenProgressBar) {
+        dom.fullscreenProgressBar.addEventListener('input', handleFullscreenProgressChange);
+    }
+    
+    // Fullscreen player previous/next buttons.
+    if (dom.fullscreenPrevBtn) {
+        dom.fullscreenPrevBtn.addEventListener('click', async () => {
+            await playPreviousTrack();
+            renderPlaylist();
+        });
+    }
+    if (dom.fullscreenNextBtn) {
+        dom.fullscreenNextBtn.addEventListener('click', async () => {
+            await playNextTrack();
+            renderPlaylist();
+        });
+    }
+    
+    // Fullscreen player shuffle button.
+    if (dom.fullscreenShuffleBtn) {
+        dom.fullscreenShuffleBtn.addEventListener('click', toggleShuffle);
+    }
+    
+    // Fullscreen player queue button.
+    if (dom.fullscreenQueueBtn) {
+        dom.fullscreenQueueBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            togglePlaylist();
+        });
+    }
+    
+    
+    // Close fullscreen player when clicking outside (on backdrop) - removed for better UX.
+    // Users should use the back button to close the fullscreen player.
     
     // Audio player events.
     dom.audioPlayer.addEventListener('timeupdate', updateProgress);

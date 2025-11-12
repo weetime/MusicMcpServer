@@ -68,6 +68,27 @@ export const dom = {
     
     // Player control elements.
     shuffleBtn: document.getElementById('shuffleBtn'),
-    repeatBtn: document.getElementById('repeatBtn')
+    repeatBtn: document.getElementById('repeatBtn'),
+    
+    // Fullscreen player elements.
+    fullscreenPlayer: document.getElementById('fullscreenPlayer'),
+    fullscreenPlayerBackBtn: document.getElementById('fullscreenPlayerBackBtn'),
+    fullscreenAlbumArt: document.getElementById('fullscreenAlbumArt'),
+    fullscreenSongTitleOverlay: document.getElementById('fullscreenSongTitleOverlay'),
+    fullscreenArtistOverlay: document.getElementById('fullscreenArtistOverlay'),
+    fullscreenTrackName: document.getElementById('fullscreenTrackName'),
+    fullscreenTrackArtist: document.getElementById('fullscreenTrackArtist'),
+    fullscreenQualityLabel: document.getElementById('fullscreenQualityLabel'),
+    fullscreenLyricsContainer: document.getElementById('fullscreenLyricsContainer'),
+    fullscreenLyricsContent: document.getElementById('fullscreenLyricsContent'),
+    fullscreenProgressBar: document.getElementById('fullscreenProgressBar'),
+    fullscreenCurrentTime: document.getElementById('fullscreenCurrentTime'),
+    fullscreenDuration: document.getElementById('fullscreenDuration'),
+    fullscreenShuffleBtn: document.getElementById('fullscreenShuffleBtn'),
+    fullscreenPrevBtn: document.getElementById('fullscreenPrevBtn'),
+    fullscreenPlayPauseBtn: document.getElementById('fullscreenPlayPauseBtn'),
+    fullscreenPlayPauseIcon: document.getElementById('fullscreenPlayPauseIcon'),
+    fullscreenNextBtn: document.getElementById('fullscreenNextBtn'),
+    fullscreenQueueBtn: document.getElementById('fullscreenQueueBtn')
 };
 
