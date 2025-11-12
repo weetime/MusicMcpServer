@@ -2,7 +2,42 @@
 
 ## [Unreleased]
 
+### Optimized
+- 🧹 **代码优化和清理** - 整体检测并清理冗余代码
+  - 清理 PC 版本 CSS 中的移动端响应式代码（pagination, modal, lyrics, instruments）
+  - 清理移动端 CSS 中的桌面端响应式代码（results, search, breakpoints）
+  - 移除约 378 行冗余 CSS 代码（PC 版本 236 行，移动端 142 行）
+  - **清理 JS 兼容性代码**：
+    - 移动端 `results.js` - 移除所有分页按钮相关代码和 `isMobile` 判断（约 150 行）
+    - PC 端 `results.js` - 移除所有无限滚动相关代码和 `isMobile` 判断（约 150 行）
+    - 移动端 `app.js` - 移除分页按钮事件绑定
+    - 移动端 `dom.js` - 移除分页按钮引用
+    - 删除移动端 `pagination.js`（233 行，未使用）
+  - **进一步清理兼容性代码**：
+    - PC 端 `responsive.js` - 移除 `isMobile()` 和 `isTablet()` 函数（约 20 行）
+    - 移动端 `responsive.js` - 移除 `isDesktop()` 函数（约 10 行）
+    - 移动端 `breakpoints.css` - 移除桌面端断点变量（约 5 行）
+    - 删除移动端 `pagination.css`（121 行，未使用）
+  - 总计减少约 **1333 行**冗余和兼容性代码
+  - 优化代码健壮性：添加元素存在性检查（app.js, player.js, playlist.js）
+  - 保留平板设备（768px-1023px）样式，确保移动端在平板设备上正常显示
+  - PC 和移动端版本完全独立，无兼容性代码
+  - 提高代码质量和可维护性
+  - 创建 `ai-docs/code-optimization-report.md` 优化报告
+
 ### Added
+- 🖥️ **PC 和移动端分离** - 将项目完全分离为两个独立版本
+  - 创建 `public/pc/` 目录，包含 PC 版本的所有文件（HTML、CSS、JS、icons）
+  - 创建 `public/mobile/` 目录，包含移动端版本的所有文件
+  - 实现自动设备检测和重定向功能
+  - 添加 `/pc` 和 `/mobile` 路由，支持手动访问不同版本
+  - PC 版本优化：移除移动端响应式样式，只保留桌面样式
+  - 移动端版本优化：移除桌面样式，只保留移动端样式
+  - 两个版本完全独立，互不影响
+  - 清理 PC 版本 CSS：移除所有 `@media (max-width: ...)` 移动端响应式代码
+  - 移除 `public/` 目录下的原始文件（index.html, css/, js/），不再使用
+  - 移除 server.js 中对 `public/` 目录的静态文件服务
+  - 创建 `ai-docs/pc-mobile-separation.md` 详细实现文档
 - 🚀 **移动端无限加载优化** - 优化移动端无限滚动加载性能和响应速度
   - 简化滚动检测逻辑，减少延迟（从 150ms 降低到 100ms）
   - 优化触发阈值（从 400px 增加到 500px，更早触发加载）

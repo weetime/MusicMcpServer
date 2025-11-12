@@ -1,0 +1,136 @@
+/**
+ * Search Module
+ * Handles music search functionality with pagination support.
+ */
+
+import { dom } from './dom.js';
+import { saveSearchHistory, hideSearchHistory } from './history.js';
+import { showLoading, hideLoading } from './ui.js';
+import { hideResults } from './ui.js';
+import { displayResults, setPaginationQuery } from './results.js';
+import { alert } from './modal.js';
+
+// Search state.
+let currentQuery = '';
+let currentPage = 1;
+const PAGE_SIZE = 12;
+
+// Track if artist input was manually modified by user.
+let artistInputModified = false;
+
+/**
+ * Sets the artist input modification flag.
+ * @param {boolean} modified - Whether the artist input was modified.
+ */
+export function setArtistInputModified(modified) {
+    artistInputModified = modified;
+}
+
+/**
+ * Handles search button click.
+ * Default music source is Netease Cloud Music for better Chinese song support.
+ * @param {number} page - Page number (default: 1).
+ * @param {string} queryOverride - Optional query string to override input values (for pagination).
+ * @param {boolean} append - Whether to append results (for infinite scroll).
+ */
+export async function handleSearch(page = 1, queryOverride = null, append = false) {
+    let query;
+    
+    if (queryOverride) {
+        // Use provided query (for pagination).
+        query = queryOverride;
+    } else {
+        // Get query from input fields.
+        const song = dom.songInput.value.trim();
+        const artist = dom.artistInput.value.trim();
+        
+        if (!song) {
+            await alert('Please enter a song name!', '提示');
+            return;
+        }
+        
+        // Build search query for Netease (simply combine with space).
+        // Only include artist if it was manually modified by user.
+        query = song;
+        if (artist && artistInputModified) {
+            query += ` ${artist}`;
+        }
+        
+        // Reset artist input modification flag after building query for new search.
+        // This ensures that if user doesn't modify artist input, it won't be used in next search.
+        if (page === 1) {
+            artistInputModified = false;
+        }
+    }
+    
+    // Save to search history (only for first page).
+    if (page === 1) {
+        saveSearchHistory(query);
+    }
+    
+    // Hide search history.
+    hideSearchHistory();
+    
+    // Show loading state (only for first page or desktop pagination).
+    if (page === 1 || !append) {
+        showLoading();
+    }
+    if (page === 1) {
+        hideResults();
+    }
+    // Don't hide player - keep it visible if playing
+    
+    try {
+        // Calculate offset for pagination.
+        const offset = (page - 1) * PAGE_SIZE;
+        
+        // Search via Netease Cloud Music API.
+        const response = await fetch(
+            `/api/search?q=${encodeURIComponent(query)}&limit=${PAGE_SIZE}&offset=${offset}`
+        );
+        
+        if (!response.ok) {
+            throw new Error('搜索失败，请稍后重试');
+        }
+        
+        const data = await response.json();
+        
+        if (data.success && data.results.tracks && data.results.tracks.items.length > 0) {
+            // Update search state.
+            currentQuery = query;
+            currentPage = page;
+            
+            // Update pagination query in results module (only for first page).
+            if (page === 1) {
+                setPaginationQuery(query);
+            }
+            
+            // Display results with pagination info.
+            displayResults(data.results.tracks.items, data.pagination, append);
+        } else {
+            // No results found
+            if (page === 1) {
+                await alert('No songs found. Please try different keywords.', '未找到结果');
+                hideLoading();
+            } else {
+                // For infinite scroll: no more results on this page
+                // Call displayResults with empty array to update state properly
+                // Use current page info from results module
+                displayResults([], { total: 0, hasMore: false, offset: (page - 1) * PAGE_SIZE }, append);
+            }
+        }
+    } catch (error) {
+        console.error('Search error:', error);
+        
+        // For infinite scroll append mode, show less intrusive error
+        if (append) {
+            // Just log and reset state, don't show alert for append failures
+            hideLoading();
+        } else {
+            await alert('Search error: ' + error.message, '搜索错误');
+            hideLoading();
+        }
+    }
+}
+
+
