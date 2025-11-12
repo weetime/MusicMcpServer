@@ -416,6 +416,62 @@
     }
 }
 
+/* Mobile: Small screens (480px and below) */
+@media (max-width: 480px) {
+    .fixed-search-bar {
+        padding: 10px 12px;
+    }
+    
+    .search-bar-container {
+        border-radius: 1.5rem;
+    }
+    
+    .search-icon-wrapper {
+        width: 44px;
+        height: 44px;
+    }
+    
+    .search-icon {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .search-bar-input {
+        height: 44px;
+        font-size: 0.9rem;
+        padding: 0 12px;
+    }
+    
+    .search-bar-btn {
+        height: 44px;
+        padding: 0 16px;
+        font-size: 0.875rem;
+        border-radius: 0 1.5rem 1.5rem 0;
+        min-width: 60px;
+    }
+    
+    .search-options-bar {
+        margin-top: 8px;
+        gap: 8px;
+    }
+    
+    .search-option-input,
+    .search-option-select {
+        height: 2.25rem;
+        font-size: 0.8rem;
+        padding: 0 12px;
+    }
+    
+    .search-option-input {
+        width: 100%;
+    }
+    
+    .search-option-select {
+        width: 100%;
+        padding-right: 32px;
+    }
+}
+
 /* Tablet: 768px and up */
 @media (min-width: 768px) {
     .fixed-search-bar {
