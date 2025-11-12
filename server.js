@@ -38,10 +38,24 @@ app.get('/mobile', (req, res) => {
 });
 
 // Serve static files for PC version (root path) - after routes to avoid conflicts.
-app.use('/', express.static(path.join(__dirname, 'public/pc')));
+app.use('/', express.static(path.join(__dirname, 'public/pc'), {
+    setHeaders: (res, filePath) => {
+        // Ensure JavaScript files are served with correct MIME type for ES modules
+        if (filePath.endsWith('.js')) {
+            res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+        }
+    }
+}));
 
 // Serve static files for Mobile version.
-app.use('/mobile', express.static(path.join(__dirname, 'public/mobile')));
+app.use('/mobile', express.static(path.join(__dirname, 'public/mobile'), {
+    setHeaders: (res, filePath) => {
+        // Ensure JavaScript files are served with correct MIME type for ES modules
+        if (filePath.endsWith('.js')) {
+            res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+        }
+    }
+}));
 
 // API routes configuration.
 app.use('/api', apiRoutes);

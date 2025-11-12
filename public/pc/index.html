@@ -301,6 +301,10 @@
 
     <!-- Modular JavaScript -->
     <script type="module" src="js/app.js"></script>
+    <script nomodule>
+        console.error('This application requires a browser that supports ES modules. Please use a modern browser.');
+        alert('您的浏览器不支持ES模块。请使用现代浏览器（如Chrome、Firefox、Safari、Edge）访问此应用。');
+    </script>
 </body>
 </html>
 

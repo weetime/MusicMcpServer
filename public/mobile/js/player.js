@@ -19,7 +19,7 @@ import {
 } from './state.js';
 import { qualityNames } from './state.js';
 import { formatTime } from './utils.js';
-import { fetchLyrics, updateLyrics, clearLyrics } from './lyrics.js';
+import { fetchLyrics, updateLyrics, clearLyrics, renderFullscreenLyrics } from './lyrics.js';
 import { alert } from './modal.js';
 
 /**
@@ -37,6 +37,113 @@ function updateSearchResultsPadding() {
             searchResults.classList.remove('no-player-padding');
         }
     }
+}
+
+/**
+ * Updates fullscreen player UI with current track information.
+ * @param {Object} track - Track object.
+ */
+function updateFullscreenPlayerUI(track) {
+    if (!dom.fullscreenPlayer) return;
+    
+    const albumArtUrl = track.album.images[0]?.url || 'https://via.placeholder.com/400';
+    const trackName = track.name;
+    const artistName = track.artists.map(a => a.name).join(', ');
+    const quality = dom.qualitySelect.value;
+    const qualityLabel = qualityNames[quality] || 'Standard';
+    
+    // Update album art.
+    if (dom.fullscreenAlbumArt) {
+        dom.fullscreenAlbumArt.src = albumArtUrl;
+        dom.fullscreenAlbumArt.alt = trackName;
+    }
+    
+    // Update overlay text.
+    if (dom.fullscreenSongTitleOverlay) {
+        dom.fullscreenSongTitleOverlay.textContent = trackName;
+    }
+    if (dom.fullscreenArtistOverlay) {
+        dom.fullscreenArtistOverlay.textContent = `/ ${artistName}`;
+    }
+    
+    // Update track info.
+    if (dom.fullscreenTrackName) {
+        dom.fullscreenTrackName.textContent = trackName;
+    }
+    if (dom.fullscreenTrackArtist) {
+        dom.fullscreenTrackArtist.textContent = artistName;
+    }
+    
+    // Update quality label.
+    if (dom.fullscreenQualityLabel) {
+        // Map quality to Chinese label.
+        const qualityMap = {
+            'standard': '标准',
+            'higher': '较高',
+            'exhigh': '极高',
+            'lossless': '无损',
+            'hires': 'Hi-Res'
+        };
+        dom.fullscreenQualityLabel.textContent = qualityMap[quality] || '标准';
+    }
+}
+
+/**
+ * Opens the fullscreen player.
+ */
+export function openFullscreenPlayer() {
+    if (!dom.fullscreenPlayer || !currentTrack) return;
+    
+    // Update fullscreen player UI.
+    updateFullscreenPlayerUI(currentTrack);
+    
+    // Show fullscreen player.
+    dom.fullscreenPlayer.classList.remove('hidden');
+    // Use requestAnimationFrame to ensure the element is visible before adding active class.
+    requestAnimationFrame(() => {
+        dom.fullscreenPlayer.classList.add('active');
+    });
+    
+    // Prevent body scroll when fullscreen player is open.
+    document.body.style.overflow = 'hidden';
+    
+    // Hide bottom navigation and player bar when fullscreen player is open.
+    const bottomNav = document.querySelector('.bottom-nav');
+    if (bottomNav) {
+        bottomNav.style.display = 'none';
+    }
+    if (dom.musicPlayer) {
+        dom.musicPlayer.style.display = 'none';
+    }
+    
+    // Render lyrics in fullscreen player if available.
+    renderFullscreenLyrics();
+}
+
+/**
+ * Closes the fullscreen player.
+ */
+export function closeFullscreenPlayer() {
+    if (!dom.fullscreenPlayer) return;
+    
+    // Remove active class first for transition.
+    dom.fullscreenPlayer.classList.remove('active');
+    
+    // Hide after transition.
+    setTimeout(() => {
+        dom.fullscreenPlayer.classList.add('hidden');
+        // Restore body scroll.
+        document.body.style.overflow = '';
+        
+        // Show bottom navigation and player bar again.
+        const bottomNav = document.querySelector('.bottom-nav');
+        if (bottomNav) {
+            bottomNav.style.display = '';
+        }
+        if (dom.musicPlayer && !dom.musicPlayer.classList.contains('hidden')) {
+            dom.musicPlayer.style.display = '';
+        }
+    }, 300);
 }
 
 /**
@@ -66,6 +173,9 @@ export async function playTrack(track) {
     dom.albumArt.alt = track.name;
     dom.trackName.textContent = track.name;
     dom.trackArtist.textContent = track.artists.map(a => a.name).join(', ');
+    
+    // Update fullscreen player UI if it exists.
+    updateFullscreenPlayerUI(track);
     
     // Show fixed bottom player.
     dom.musicPlayer.classList.remove('hidden');
@@ -135,14 +245,34 @@ export function togglePlayPause() {
  */
 export function updatePlayPauseIcon() {
     dom.playPauseIcon.textContent = isPlaying ? '⏸' : '▶';
+    
+    // Update fullscreen player play/pause icon if it exists.
+    if (dom.fullscreenPlayPauseIcon) {
+        dom.fullscreenPlayPauseIcon.textContent = isPlaying ? '⏸' : '▶';
+    }
 }
 
 /**
  * Handles progress bar change.
  */
 export function handleProgressChange() {
+    if (!dom.progressBar) return;
     const time = (dom.progressBar.value / 100) * dom.audioPlayer.duration;
     dom.audioPlayer.currentTime = time;
+}
+
+/**
+ * Handles fullscreen player progress bar change.
+ */
+export function handleFullscreenProgressChange() {
+    if (!dom.fullscreenProgressBar) return;
+    const time = (dom.fullscreenProgressBar.value / 100) * dom.audioPlayer.duration;
+    dom.audioPlayer.currentTime = time;
+    
+    // Sync with regular progress bar.
+    if (dom.progressBar) {
+        dom.progressBar.value = dom.fullscreenProgressBar.value;
+    }
 }
 
 /**
@@ -194,8 +324,22 @@ export function updateVolumeIcon(volume) {
 export function updateProgress() {
     if (dom.audioPlayer.duration) {
         const progress = (dom.audioPlayer.currentTime / dom.audioPlayer.duration) * 100;
-        dom.progressBar.value = progress;
-        dom.currentTime.textContent = formatTime(dom.audioPlayer.currentTime);
+        
+        // Update progress bar if it exists (may not exist in mobile player bar).
+        if (dom.progressBar) {
+            dom.progressBar.value = progress;
+        }
+        if (dom.currentTime) {
+            dom.currentTime.textContent = formatTime(dom.audioPlayer.currentTime);
+        }
+        
+        // Update fullscreen player progress if it exists.
+        if (dom.fullscreenProgressBar) {
+            dom.fullscreenProgressBar.value = progress;
+        }
+        if (dom.fullscreenCurrentTime) {
+            dom.fullscreenCurrentTime.textContent = formatTime(dom.audioPlayer.currentTime);
+        }
         
         // Update lyrics synchronization.
         updateLyrics(dom.audioPlayer.currentTime);
@@ -208,6 +352,11 @@ export function updateProgress() {
 export function updateDuration() {
     if (dom.audioPlayer.duration) {
         dom.duration.textContent = formatTime(dom.audioPlayer.duration);
+        
+        // Update fullscreen player duration if it exists.
+        if (dom.fullscreenDuration) {
+            dom.fullscreenDuration.textContent = formatTime(dom.audioPlayer.duration);
+        }
     }
 }
 
@@ -218,8 +367,18 @@ export function updateDuration() {
 export async function handleTrackEnd() {
     setIsPlaying(false);
     updatePlayPauseIcon();
-    dom.progressBar.value = 0;
-    dom.currentTime.textContent = '0:00';
+    if (dom.progressBar) {
+        dom.progressBar.value = 0;
+    }
+    if (dom.currentTime) {
+        dom.currentTime.textContent = '0:00';
+    }
+    if (dom.fullscreenProgressBar) {
+        dom.fullscreenProgressBar.value = 0;
+    }
+    if (dom.fullscreenCurrentTime) {
+        dom.fullscreenCurrentTime.textContent = '0:00';
+    }
     
     // Handle repeat one mode - replay current track.
     if (repeatMode === 'one') {
@@ -368,14 +527,25 @@ export function toggleRepeat() {
  * Updates shuffle button visual state.
  */
 function updateShuffleButton() {
-    if (!dom.shuffleBtn) return;
+    if (dom.shuffleBtn) {
+        if (isShuffle) {
+            dom.shuffleBtn.classList.add('active');
+            dom.shuffleBtn.style.color = 'var(--accent-primary)';
+        } else {
+            dom.shuffleBtn.classList.remove('active');
+            dom.shuffleBtn.style.color = '';
+        }
+    }
     
-    if (isShuffle) {
-        dom.shuffleBtn.classList.add('active');
-        dom.shuffleBtn.style.color = 'var(--accent-primary)';
-    } else {
-        dom.shuffleBtn.classList.remove('active');
-        dom.shuffleBtn.style.color = '';
+    // Update fullscreen player shuffle button if it exists.
+    if (dom.fullscreenShuffleBtn) {
+        if (isShuffle) {
+            dom.fullscreenShuffleBtn.classList.add('active');
+            dom.fullscreenShuffleBtn.style.color = 'var(--accent-primary)';
+        } else {
+            dom.fullscreenShuffleBtn.classList.remove('active');
+            dom.fullscreenShuffleBtn.style.color = '';
+        }
     }
 }
 
