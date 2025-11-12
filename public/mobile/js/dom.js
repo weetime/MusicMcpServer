@@ -18,7 +18,7 @@ export const dom = {
     // Note: Mobile uses infinite scroll, no pagination buttons (prevPageBtn, nextPageBtn).
     
     // Player elements.
-    musicPlayer: document.getElementById('musicPlayer'),
+    musicPlayer: document.getElementById('musicPlayer'), // Now refers to music-player-bar
     closePlayer: document.getElementById('closePlayer'),
     albumArt: document.getElementById('albumArt'),
     trackName: document.getElementById('trackName'),
@@ -52,6 +52,16 @@ export const dom = {
     instrumentsBtn: document.getElementById('instrumentsBtn'),
     instrumentsDropdown: document.getElementById('instrumentsDropdown'),
     instrumentsContent: document.getElementById('instrumentsContent'),
+    
+    // Bottom navigation elements.
+    navHome: document.getElementById('navHome'),
+    navInstruments: document.getElementById('navInstruments'),
+    navTheme: document.getElementById('navTheme'),
+    
+    // Theme elements.
+    themeBtn: document.getElementById('themeBtn'),
+    themeDropdown: document.getElementById('themeDropdown'),
+    themeList: document.getElementById('themeList'),
     
     // Pagination elements (not used in mobile, kept for compatibility).
     paginationContainer: document.getElementById('paginationContainer'),

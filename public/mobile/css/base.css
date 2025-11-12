@@ -36,8 +36,8 @@ body::-webkit-scrollbar {
     margin: 0 auto;
     padding: 16px;
     padding-top: calc(var(--header-height, 60px) + var(--search-bar-height, 160px) + 20px);
-    padding-bottom: 0;
-    min-height: calc(100vh - var(--header-height, 60px) - var(--search-bar-height, 160px) - 100px);
+    padding-bottom: calc(var(--bottom-nav-height, 60px) + 100px);
+    min-height: calc(100vh - var(--header-height, 60px) - var(--search-bar-height, 160px) - var(--bottom-nav-height, 60px) - 100px);
     box-sizing: border-box;
     overflow-x: hidden;
     transition: padding-top 0.2s ease;
@@ -48,8 +48,8 @@ body::-webkit-scrollbar {
     .container {
         padding: 20px;
         padding-top: calc(var(--header-height, 70px) + var(--search-bar-height, 170px) + 20px);
-        padding-bottom: 0;
-        min-height: calc(100vh - var(--header-height, 70px) - var(--search-bar-height, 170px) - 90px);
+        padding-bottom: calc(var(--bottom-nav-height, 60px) + 100px);
+        min-height: calc(100vh - var(--header-height, 70px) - var(--search-bar-height, 170px) - var(--bottom-nav-height, 60px) - 90px);
     }
 }
 

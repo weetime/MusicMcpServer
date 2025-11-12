@@ -113,6 +113,9 @@ export function renderSearchHistory() {
  * Shows search history dropdown.
  */
 export function showSearchHistory() {
+    // Always render history first to ensure it's up to date.
+    renderSearchHistory();
+    
     const history = getSearchHistory();
     if (history.length > 0) {
         dom.searchHistory.classList.remove('hidden');

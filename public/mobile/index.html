@@ -11,9 +11,11 @@
     <link rel="stylesheet" href="css/search.css">
     <link rel="stylesheet" href="css/results.css">
     <link rel="stylesheet" href="css/player.css">
+    <link rel="stylesheet" href="css/player-bar.css">
     <link rel="stylesheet" href="css/lyrics.css">
     <link rel="stylesheet" href="css/modal.css">
     <link rel="stylesheet" href="css/instruments.css">
+    <link rel="stylesheet" href="css/bottom-nav.css">
     <link rel="stylesheet" href="css/responsive.css">
 </head>
 <body>
@@ -21,54 +23,6 @@
     <header class="fixed-header">
         <div class="header-content">
             <h1 class="title">MusicEcho</h1>
-        </div>
-        <div class="header-actions">
-            <div class="instruments-selector">
-                <button 
-                    id="instrumentsBtn" 
-                    class="instruments-btn" 
-                    title="乐器频道"
-                    aria-label="打开乐器频道"
-                    aria-expanded="false"
-                    aria-haspopup="true"
-                >
-                    <span class="instruments-btn-text">🎼</span>
-                </button>
-                <div 
-                    id="instrumentsDropdown" 
-                    class="instruments-dropdown hidden"
-                    role="menu"
-                    aria-labelledby="instrumentsBtn"
-                >
-                    <div class="instruments-dropdown-content" id="instrumentsContent"></div>
-                </div>
-            </div>
-            <div class="theme-selector">
-                <button 
-                    id="themeBtn" 
-                    class="theme-btn" 
-                    title="Change Theme"
-                    aria-label="切换主题"
-                    aria-expanded="false"
-                    aria-haspopup="true"
-                >
-                    <svg class="theme-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                        <circle cx="12" cy="12" r="4"></circle>
-                        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
-                    </svg>
-                </button>
-                <div 
-                    id="themeDropdown" 
-                    class="theme-dropdown hidden"
-                    role="menu"
-                    aria-labelledby="themeBtn"
-                >
-                    <div class="theme-dropdown-header">
-                        <span>选择主题</span>
-                    </div>
-                    <div class="theme-list" id="themeList" role="listbox"></div>
-                </div>
-            </div>
         </div>
     </header>
 
@@ -143,66 +97,32 @@
         </div>
     </div>
 
-    <!-- Fixed Bottom Player -->
-    <div id="musicPlayer" class="music-player hidden">
+    <!-- Fixed Center Player Bar -->
+    <div id="musicPlayer" class="music-player-bar hidden">
         <audio id="audioPlayer" preload="metadata"></audio>
         
-        <div class="player-left">
-            <div class="player-album-art">
+        <div class="player-bar-left">
+            <div class="player-bar-album-art">
                 <img id="albumArt" src="" alt="Album Art" class="album-art-thumb">
             </div>
-            <div class="player-track-info">
-                <div id="trackName" class="player-track-name">Song Name</div>
-                <div id="trackArtist" class="player-track-artist">Artist</div>
+            <div class="player-bar-track-info">
+                <div id="trackName" class="player-bar-track-name">Song Name</div>
+                <div id="trackArtist" class="player-bar-track-artist">Artist</div>
             </div>
         </div>
         
-        <div class="player-center">
-            <div class="player-controls-main">
-                <button class="player-control-btn prev-btn" title="Previous">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polygon points="19 20 9 12 19 4 19 20"></polygon>
-                        <line x1="5" y1="19" x2="5" y2="5"></line>
-                    </svg>
-                </button>
-                <button id="playPauseBtn" class="player-control-btn play-btn-main" title="Play/Pause">
-                    <span id="playPauseIcon">▶</span>
-                </button>
-                <button class="player-control-btn next-btn" title="Next">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polygon points="5 4 15 12 5 20 5 4"></polygon>
-                        <line x1="19" y1="5" x2="19" y2="19"></line>
-                    </svg>
-                </button>
-            </div>
-            <div class="player-progress-container">
-                <span id="currentTime" class="player-time">0:00</span>
-                <input 
-                    type="range" 
-                    id="progressBar" 
-                    class="player-progress-bar" 
-                    min="0" 
-                    max="100" 
-                    value="0"
-                >
-                <span id="duration" class="player-time">0:00</span>
-            </div>
-        </div>
-        
-        <div class="player-right">
-            <button id="lyricsBtn" class="player-icon-btn lyrics-btn" title="Lyrics">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                    <polyline points="14 2 14 8 20 8"></polyline>
-                    <line x1="16" y1="13" x2="8" y2="13"></line>
-                    <line x1="16" y1="17" x2="8" y2="17"></line>
-                    <polyline points="10 9 9 9 8 9"></polyline>
-                </svg>
+        <div class="player-bar-right">
+            <button id="playPauseBtn" class="player-bar-play-btn" title="Play/Pause">
+                <span id="playPauseIcon">▶</span>
             </button>
-            <button id="closePlayer" class="player-icon-btn" title="Close player">
+            <button class="player-bar-queue-btn" title="Playlist">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                    <line x1="8" y1="6" x2="21" y2="6"></line>
+                    <line x1="8" y1="12" x2="21" y2="12"></line>
+                    <line x1="8" y1="18" x2="21" y2="18"></line>
+                    <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                    <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                    <line x1="3" y1="18" x2="3.01" y2="18"></line>
                 </svg>
             </button>
         </div>
@@ -233,6 +153,68 @@
         <div id="lyricsContainer" class="lyrics-container">
             <div class="lyrics-empty">暂无歌词</div>
         </div>
+    </div>
+
+    <!-- Fixed Bottom Navigation Bar -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" id="navHome" aria-label="首页">
+            <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            <span class="nav-label">首页</span>
+        </button>
+        <button class="nav-item" id="navInstruments" aria-label="乐器">
+            <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 18V5l12-2v13"></path>
+                <circle cx="6" cy="18" r="3"></circle>
+                <circle cx="18" cy="16" r="3"></circle>
+            </svg>
+            <span class="nav-label">乐器</span>
+        </button>
+        <button class="nav-item" id="navTheme" aria-label="主题">
+            <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="4"></circle>
+                <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+            </svg>
+            <span class="nav-label">主题</span>
+        </button>
+    </nav>
+
+    <!-- Instruments Dropdown (moved from header) -->
+    <div 
+        id="instrumentsDropdown" 
+        class="instruments-dropdown hidden"
+        role="menu"
+        aria-labelledby="navInstruments"
+    >
+        <div class="instruments-dropdown-content" id="instrumentsContent"></div>
+    </div>
+
+    <!-- Theme Dropdown (moved from header) -->
+    <div 
+        id="themeDropdown" 
+        class="theme-dropdown-bottom hidden"
+        role="menu"
+        aria-labelledby="navTheme"
+    >
+        <div class="theme-dropdown-header">
+            <span>选择主题</span>
+        </div>
+        <div class="theme-list" id="themeList" role="listbox"></div>
+    </div>
+
+    <!-- Playlist Dropdown (for player bar queue button) -->
+    <div 
+        id="playlistDropdown" 
+        class="playlist-dropdown playlist-dropdown-bottom hidden"
+        role="menu"
+    >
+        <div class="playlist-header">
+            <span>播放列表</span>
+            <span id="playlistCount" class="playlist-count">0 首</span>
+        </div>
+        <div id="playlistList" class="playlist-list"></div>
     </div>
 
     <!-- Modular JavaScript -->

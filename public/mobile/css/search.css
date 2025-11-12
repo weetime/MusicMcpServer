@@ -290,6 +290,30 @@
     display: none;
 }
 
+/* Playlist Dropdown Bottom (for mobile player bar) */
+.playlist-dropdown-bottom {
+    position: fixed;
+    bottom: calc(var(--bottom-nav-height, 60px) + var(--player-bar-height, 64px) + 24px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100vw - 32px);
+    max-width: 500px;
+    max-height: 60vh;
+    background: var(--bg-secondary);
+    border-radius: 16px;
+    border: 1px solid var(--border-primary);
+    box-shadow: 0 8px 32px var(--shadow-md);
+    z-index: 1001;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    animation: slideUp 0.3s ease;
+}
+
+.playlist-dropdown-bottom.hidden {
+    display: none;
+}
+
 .playlist-header {
     display: flex;
     justify-content: space-between;
