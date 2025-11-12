@@ -20,7 +20,6 @@ import {
     updateDuration,
     handleTrackEnd,
     handleAudioError,
-    closePlayerPanel,
     playPreviousTrack,
     playNextTrack,
     updateVolumeIcon,
@@ -30,7 +29,7 @@ import {
 import { togglePlaylist, renderPlaylist } from './playlist.js';
 import { toggleLyrics } from './lyrics.js';
 // Mobile uses infinite scroll, no pagination functions needed.
-import { initThemeUI } from './ui-theme.js';
+import { initThemeUI, toggleThemeDropdown, hideThemeDropdown } from './ui-theme.js';
 import { renderInstruments, toggleInstrumentsDropdown, hideInstrumentsDropdown } from './instruments.js';
 import { initResponsive } from './responsive.js';
 
@@ -51,29 +50,61 @@ function init() {
         });
     }
     
-    // Instruments channel button event.
-    if (dom.instrumentsBtn) {
-        dom.instrumentsBtn.addEventListener('click', (e) => {
+    // Helper function to close playlist dropdown.
+    function closePlaylistDropdown() {
+        if (dom.playlistDropdown) {
+            dom.playlistDropdown.classList.add('hidden');
+        }
+    }
+    
+    // Bottom navigation events.
+    if (dom.navHome) {
+        dom.navHome.addEventListener('click', () => {
+            // Close playlist when clicking home.
+            closePlaylistDropdown();
+            // Scroll to top and reset active state.
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            setActiveNav('home');
+        });
+    }
+    
+    if (dom.navInstruments) {
+        dom.navInstruments.addEventListener('click', (e) => {
             e.stopPropagation();
+            // Close playlist when clicking instruments.
+            closePlaylistDropdown();
             toggleInstrumentsDropdown();
+            setActiveNav('instruments');
             // Update aria-expanded attribute.
             const isExpanded = !dom.instrumentsDropdown.classList.contains('hidden');
-            dom.instrumentsBtn.setAttribute('aria-expanded', isExpanded);
+            dom.navInstruments.setAttribute('aria-expanded', isExpanded);
         });
-        
-        // Keyboard support for instruments button.
-        dom.instrumentsBtn.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                dom.instrumentsBtn.click();
-            }
+    }
+    
+    if (dom.navTheme) {
+        dom.navTheme.addEventListener('click', (e) => {
+            e.stopPropagation();
+            // Close playlist when clicking theme.
+            closePlaylistDropdown();
+            toggleThemeDropdown();
+            setActiveNav('theme');
+            // Update aria-expanded attribute.
+            const isExpanded = !dom.themeDropdown.classList.contains('hidden');
+            dom.navTheme.setAttribute('aria-expanded', isExpanded);
         });
     }
     
     // Hide instruments dropdown when clicking outside.
     document.addEventListener('click', (e) => {
-        if (!e.target.closest('.instruments-selector')) {
+        if (!e.target.closest('.instruments-dropdown') && !e.target.closest('#navInstruments')) {
             hideInstrumentsDropdown();
+        }
+    });
+    
+    // Hide theme dropdown when clicking outside.
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.theme-dropdown-bottom') && !e.target.closest('#navTheme')) {
+            hideThemeDropdown();
         }
     });
     
@@ -111,7 +142,14 @@ function init() {
         }
     });
     
-    dom.closePlayer.addEventListener('click', closePlayerPanel);
+    // Queue/Playlist button in player bar.
+    const queueBtn = document.querySelector('.player-bar-queue-btn');
+    if (queueBtn) {
+        queueBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            togglePlaylist();
+        });
+    }
     dom.playPauseBtn.addEventListener('click', togglePlayPause);
     dom.progressBar.addEventListener('input', handleProgressChange);
     
@@ -159,10 +197,16 @@ function init() {
         dom.lyricsCloseBtn.addEventListener('click', toggleLyrics);
     }
     
-    // Hide playlist when clicking outside.
+    // Hide playlist when clicking outside (including bottom nav buttons).
     document.addEventListener('click', (e) => {
-        if (!e.target.closest('.player-right')) {
-            dom.playlistDropdown.classList.add('hidden');
+        // Close playlist if clicking outside the dropdown and queue button.
+        // Also close if clicking on bottom nav buttons.
+        const isClickingPlaylist = e.target.closest('.playlist-dropdown-bottom');
+        const isClickingQueueBtn = e.target.closest('.player-bar-queue-btn');
+        const isClickingBottomNav = e.target.closest('.bottom-nav');
+        
+        if (!isClickingPlaylist && !isClickingQueueBtn) {
+            closePlaylistDropdown();
         }
     });
     
@@ -196,6 +240,24 @@ function init() {
     
     // Load and display search history.
     renderSearchHistory();
+}
+
+/**
+ * Sets active navigation item.
+ */
+function setActiveNav(activeId) {
+    const navItems = document.querySelectorAll('.nav-item');
+    navItems.forEach(item => {
+        item.classList.remove('active');
+    });
+    
+    if (activeId === 'home' && dom.navHome) {
+        dom.navHome.classList.add('active');
+    } else if (activeId === 'instruments' && dom.navInstruments) {
+        dom.navInstruments.classList.add('active');
+    } else if (activeId === 'theme' && dom.navTheme) {
+        dom.navTheme.classList.add('active');
+    }
 }
 
 // Initialize on page load.

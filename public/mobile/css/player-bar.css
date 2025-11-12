@@ -1,0 +1,183 @@
+/* Fixed Center Player Bar - Mobile Version */
+.music-player-bar {
+    position: fixed;
+    bottom: var(--bottom-nav-height, 60px);
+    left: 0;
+    right: 0;
+    height: 64px;
+    background: var(--bg-secondary);
+    border-radius: 0;
+    border-top: 1px solid var(--border-primary);
+    border-bottom: none;
+    border-left: none;
+    border-right: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    z-index: 998;
+    box-shadow: none;
+    margin: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.music-player-bar.hidden {
+    display: none !important;
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+/* Player Bar Left Section */
+.player-bar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+}
+
+.player-bar-album-art {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--bg-tertiary);
+    flex-shrink: 0;
+}
+
+.player-bar-track-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.player-bar-track-name {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 2px;
+}
+
+.player-bar-track-artist {
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Player Bar Right Section */
+.player-bar-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.player-bar-play-btn {
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: var(--accent-primary);
+    color: var(--text-primary);
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    padding: 0;
+    flex-shrink: 0;
+}
+
+.player-bar-play-btn:hover {
+    background: var(--accent-hover);
+    transform: scale(1.05);
+}
+
+.player-bar-play-btn:active {
+    background: var(--accent-active);
+    transform: scale(0.95);
+}
+
+.player-bar-play-btn span {
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 2px;
+}
+
+.player-bar-queue-btn {
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    padding: 0;
+    flex-shrink: 0;
+}
+
+.player-bar-queue-btn:hover {
+    color: var(--text-primary);
+    background: var(--bg-hover);
+}
+
+.player-bar-queue-btn:active {
+    background: var(--bg-active);
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+    .music-player-bar {
+        bottom: var(--bottom-nav-height, 60px);
+        left: 0;
+        right: 0;
+        height: 56px;
+        padding: 0 12px;
+        border-radius: 0;
+    }
+    
+    .player-bar-album-art {
+        width: 44px;
+        height: 44px;
+    }
+    
+    .player-bar-track-name {
+        font-size: 0.8125rem;
+    }
+    
+    .player-bar-track-artist {
+        font-size: 0.6875rem;
+    }
+    
+    .player-bar-play-btn {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .player-bar-play-btn span {
+        font-size: 14px;
+    }
+    
+    .player-bar-queue-btn {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .player-bar-queue-btn svg {
+        width: 16px;
+        height: 16px;
+    }
+}
+

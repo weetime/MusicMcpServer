@@ -1,0 +1,93 @@
+/* Fixed Bottom Navigation Bar - Mobile Version */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: var(--bottom-nav-height, 60px);
+    background: var(--bg-primary);
+    border-top: none;
+    border-bottom: none;
+    border-left: none;
+    border-right: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    z-index: 999;
+    box-shadow: none;
+    margin: 0;
+    padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 8px 12px;
+    transition: all 0.2s ease;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+    touch-action: manipulation;
+    min-height: 60px;
+}
+
+.nav-item:hover {
+    color: var(--text-primary);
+    background: var(--bg-hover);
+}
+
+.nav-item:active {
+    background: var(--bg-active);
+    transform: scale(0.95);
+}
+
+.nav-item.active {
+    color: var(--accent-primary);
+}
+
+.nav-item.active .nav-icon {
+    color: var(--accent-primary);
+}
+
+.nav-icon {
+    width: 24px;
+    height: 24px;
+    color: inherit;
+    transition: color 0.2s ease;
+}
+
+.nav-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: inherit;
+    transition: color 0.2s ease;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+    .bottom-nav {
+        height: var(--bottom-nav-height, 56px);
+    }
+    
+    .nav-item {
+        min-height: 56px;
+        padding: 6px 8px;
+        gap: 3px;
+    }
+    
+    .nav-icon {
+        width: 22px;
+        height: 22px;
+    }
+    
+    .nav-label {
+        font-size: 0.6875rem;
+    }
+}
+

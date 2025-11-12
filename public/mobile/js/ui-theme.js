@@ -18,7 +18,7 @@ export function initThemeUI() {
     themeDropdown = document.getElementById('themeDropdown');
     themeList = document.getElementById('themeList');
     
-    if (!themeBtn || !themeDropdown || !themeList) {
+    if (!themeDropdown || !themeList) {
         console.warn('Theme UI elements not found');
         return;
     }
@@ -26,29 +26,24 @@ export function initThemeUI() {
     // Render theme list.
     renderThemeList();
     
-    // Event listeners.
-    themeBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        toggleThemeDropdown();
-        // Update aria-expanded attribute.
-        const isExpanded = !themeDropdown.classList.contains('hidden');
-        themeBtn.setAttribute('aria-expanded', isExpanded);
-    });
-    
-    // Keyboard support for theme button.
-    themeBtn.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            themeBtn.click();
-        }
-    });
-    
-    // Close dropdown when clicking outside.
-    document.addEventListener('click', (e) => {
-        if (!e.target.closest('.theme-selector')) {
-            hideThemeDropdown();
-        }
-    });
+    // Event listeners for header theme button (if exists - PC version).
+    if (themeBtn) {
+        themeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleThemeDropdown();
+            // Update aria-expanded attribute.
+            const isExpanded = !themeDropdown.classList.contains('hidden');
+            themeBtn.setAttribute('aria-expanded', isExpanded);
+        });
+        
+        // Keyboard support for theme button.
+        themeBtn.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                themeBtn.click();
+            }
+        });
+    }
     
     // Initialize theme system.
     initTheme();
@@ -149,29 +144,46 @@ function updateThemeList() {
 /**
  * Toggles the theme dropdown visibility.
  */
-function toggleThemeDropdown() {
+export function toggleThemeDropdown() {
     if (!themeDropdown) return;
     
     themeDropdown.classList.toggle('hidden');
+    
+    // Update aria-expanded for nav button if exists.
+    const navTheme = document.getElementById('navTheme');
+    if (navTheme) {
+        const isExpanded = !themeDropdown.classList.contains('hidden');
+        navTheme.setAttribute('aria-expanded', isExpanded);
+    }
 }
 
 /**
  * Shows the theme dropdown.
  */
 function showThemeDropdown() {
-    if (!themeDropdown || !themeBtn) return;
+    if (!themeDropdown) return;
     
     themeDropdown.classList.remove('hidden');
-    themeBtn.setAttribute('aria-expanded', 'true');
+    
+    // Update aria-expanded for nav button if exists.
+    const navTheme = document.getElementById('navTheme');
+    if (navTheme) {
+        navTheme.setAttribute('aria-expanded', 'true');
+    }
 }
 
 /**
  * Hides the theme dropdown.
  */
-function hideThemeDropdown() {
-    if (!themeDropdown || !themeBtn) return;
+export function hideThemeDropdown() {
+    if (!themeDropdown) return;
     
     themeDropdown.classList.add('hidden');
-    themeBtn.setAttribute('aria-expanded', 'false');
+    
+    // Update aria-expanded for nav button if exists.
+    const navTheme = document.getElementById('navTheme');
+    if (navTheme) {
+        navTheme.setAttribute('aria-expanded', 'false');
+    }
 }
 

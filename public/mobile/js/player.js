@@ -27,7 +27,7 @@ import { alert } from './modal.js';
  */
 function updateSearchResultsPadding() {
     const searchResults = document.querySelector('.search-results');
-    const musicPlayer = document.querySelector('.music-player');
+    const musicPlayer = document.querySelector('.music-player-bar');
     
     if (searchResults && musicPlayer) {
         const isPlayerHidden = musicPlayer.classList.contains('hidden');
@@ -250,9 +250,12 @@ export async function handleAudioError() {
  * Closes the player panel.
  */
 export function closePlayerPanel() {
+    // Note: Mobile version doesn't have a close button, but this function is kept for compatibility.
     dom.audioPlayer.pause();
     dom.audioPlayer.src = '';
-    dom.musicPlayer.classList.add('hidden');
+    if (dom.musicPlayer) {
+        dom.musicPlayer.classList.add('hidden');
+    }
     setIsPlaying(false);
     setCurrentTrack(null);
     setCurrentTrackIndex(-1);
