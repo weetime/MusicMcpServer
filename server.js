@@ -14,8 +14,38 @@ app.disable('x-powered-by');
 app.use(cors());
 app.use(express.json());
 
-// Serve static files from public directory.
-app.use(express.static(path.join(__dirname, 'public')));
+// Serve static files for PC version.
+app.use('/pc', express.static(path.join(__dirname, 'public/pc')));
+
+// Serve static files for Mobile version.
+app.use('/mobile', express.static(path.join(__dirname, 'public/mobile')));
+
+// Device detection middleware.
+function detectDevice(req, res, next) {
+    const userAgent = req.headers['user-agent'] || '';
+    const isMobile = /Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+    req.isMobile = isMobile;
+    next();
+}
+
+// Root route with device detection and auto-redirect.
+app.get('/', detectDevice, (req, res) => {
+    if (req.isMobile) {
+        res.redirect('/mobile/');
+    } else {
+        res.redirect('/pc/');
+    }
+});
+
+// PC version route.
+app.get('/pc', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/pc/index.html'));
+});
+
+// Mobile version route.
+app.get('/mobile', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/mobile/index.html'));
+});
 
 // API routes configuration.
 app.use('/api', apiRoutes);
