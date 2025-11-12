@@ -23,7 +23,31 @@ function detectDevice(req, res, next) {
     next();
 }
 
-// Root route with device detection and auto-redirect (must be before static files).
+// Serve static files for PC version (root path) - must be before routes to avoid conflicts.
+app.use('/', express.static(path.join(__dirname, 'public/pc'), {
+    setHeaders: (res, filePath) => {
+        // Ensure JavaScript files are served with correct MIME type for ES modules
+        if (filePath.endsWith('.js')) {
+            res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+        }
+    },
+    // Don't serve index.html as static file, handle it in route
+    index: false
+}));
+
+// Serve static files for Mobile version.
+app.use('/mobile', express.static(path.join(__dirname, 'public/mobile'), {
+    setHeaders: (res, filePath) => {
+        // Ensure JavaScript files are served with correct MIME type for ES modules
+        if (filePath.endsWith('.js')) {
+            res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+        }
+    },
+    // Don't serve index.html as static file, handle it in route
+    index: false
+}));
+
+// Root route with device detection and auto-redirect (after static files to allow static assets).
 app.get('/', detectDevice, (req, res) => {
     if (req.isMobile) {
         res.redirect('/mobile/');
@@ -36,26 +60,6 @@ app.get('/', detectDevice, (req, res) => {
 app.get('/mobile', (req, res) => {
     res.sendFile(path.join(__dirname, 'public/mobile/index.html'));
 });
-
-// Serve static files for PC version (root path) - after routes to avoid conflicts.
-app.use('/', express.static(path.join(__dirname, 'public/pc'), {
-    setHeaders: (res, filePath) => {
-        // Ensure JavaScript files are served with correct MIME type for ES modules
-        if (filePath.endsWith('.js')) {
-            res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
-        }
-    }
-}));
-
-// Serve static files for Mobile version.
-app.use('/mobile', express.static(path.join(__dirname, 'public/mobile'), {
-    setHeaders: (res, filePath) => {
-        // Ensure JavaScript files are served with correct MIME type for ES modules
-        if (filePath.endsWith('.js')) {
-            res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
-        }
-    }
-}));
 
 // API routes configuration.
 app.use('/api', apiRoutes);
