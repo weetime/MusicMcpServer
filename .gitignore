@@ -33,3 +33,5 @@ Thumbs.db
 # Snyk Security Extension - AI Rules (auto-generated)
 .cursor/rules/snyk_rules.mdc
 ai-docs/
+allaboutproject.md
+changelog.md

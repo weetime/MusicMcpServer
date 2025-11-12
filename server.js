@@ -14,38 +14,34 @@ app.disable('x-powered-by');
 app.use(cors());
 app.use(express.json());
 
-// Serve static files for PC version.
-app.use('/pc', express.static(path.join(__dirname, 'public/pc')));
-
-// Serve static files for Mobile version.
-app.use('/mobile', express.static(path.join(__dirname, 'public/mobile')));
-
 // Device detection middleware.
 function detectDevice(req, res, next) {
     const userAgent = req.headers['user-agent'] || '';
-    const isMobile = /Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+    // Enhanced mobile detection pattern.
+    const isMobile = /Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Windows Phone|webOS|CriOS|FxiOS/i.test(userAgent);
     req.isMobile = isMobile;
     next();
 }
 
-// Root route with device detection and auto-redirect.
+// Root route with device detection and auto-redirect (must be before static files).
 app.get('/', detectDevice, (req, res) => {
     if (req.isMobile) {
         res.redirect('/mobile/');
     } else {
-        res.redirect('/pc/');
+        res.sendFile(path.join(__dirname, 'public/pc/index.html'));
     }
-});
-
-// PC version route.
-app.get('/pc', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/pc/index.html'));
 });
 
 // Mobile version route.
 app.get('/mobile', (req, res) => {
     res.sendFile(path.join(__dirname, 'public/mobile/index.html'));
 });
+
+// Serve static files for PC version (root path) - after routes to avoid conflicts.
+app.use('/', express.static(path.join(__dirname, 'public/pc')));
+
+// Serve static files for Mobile version.
+app.use('/mobile', express.static(path.join(__dirname, 'public/mobile')));
 
 // API routes configuration.
 app.use('/api', apiRoutes);
