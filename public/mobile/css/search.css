@@ -212,13 +212,20 @@
     align-items: center;
     padding: 12px 20px;
     cursor: pointer;
-    transition: background 0.2s ease;
+    transition: background 0.2s ease, opacity 0.1s ease, transform 0.1s ease;
     color: var(--text-primary);
     font-size: 0.95rem;
+    position: relative;
 }
 
 .search-history-item:hover {
     background: var(--bg-hover);
+}
+
+.search-history-item:active,
+.search-history-item.touch-active {
+    background: var(--bg-active);
+    opacity: 0.8;
 }
 
 .search-history-item-icon {

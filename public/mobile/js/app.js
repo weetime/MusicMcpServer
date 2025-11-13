@@ -35,6 +35,7 @@ import { toggleLyrics } from './lyrics.js';
 import { initThemeUI, toggleThemeDropdown, hideThemeDropdown } from './ui-theme.js';
 import { renderInstruments, toggleInstrumentsDropdown, hideInstrumentsDropdown } from './instruments.js';
 import { initResponsive } from './responsive.js';
+import { addTouchOrClick, isTouchDevice } from './utils.js';
 
 /**
  * Initializes the application.
@@ -60,9 +61,9 @@ function init() {
         }
     }
     
-    // Bottom navigation events.
+    // Bottom navigation events with optimized touch/click handlers.
     if (dom.navHome) {
-        dom.navHome.addEventListener('click', () => {
+        addTouchOrClick(dom.navHome, () => {
             // Close playlist when clicking home.
             closePlaylistDropdown();
             // Scroll to top and reset active state.
@@ -72,7 +73,7 @@ function init() {
     }
     
     if (dom.navInstruments) {
-        dom.navInstruments.addEventListener('click', (e) => {
+        addTouchOrClick(dom.navInstruments, (e) => {
             e.stopPropagation();
             // Close playlist when clicking instruments.
             closePlaylistDropdown();
@@ -85,7 +86,7 @@ function init() {
     }
     
     if (dom.navTheme) {
-        dom.navTheme.addEventListener('click', (e) => {
+        addTouchOrClick(dom.navTheme, (e) => {
             e.stopPropagation();
             // Close playlist when clicking theme.
             closePlaylistDropdown();
@@ -97,22 +98,32 @@ function init() {
         });
     }
     
-    // Hide instruments dropdown when clicking outside.
-    document.addEventListener('click', (e) => {
+    // Hide instruments dropdown when clicking/touching outside.
+    const hideInstrumentsHandler = (e) => {
         if (!e.target.closest('.instruments-dropdown') && !e.target.closest('#navInstruments')) {
             hideInstrumentsDropdown();
         }
-    });
+    };
+    if (isTouchDevice()) {
+        document.addEventListener('touchend', hideInstrumentsHandler);
+    } else {
+        document.addEventListener('click', hideInstrumentsHandler);
+    }
     
-    // Hide theme dropdown when clicking outside.
-    document.addEventListener('click', (e) => {
+    // Hide theme dropdown when clicking/touching outside.
+    const hideThemeHandler = (e) => {
         if (!e.target.closest('.theme-dropdown-bottom') && !e.target.closest('#navTheme')) {
             hideThemeDropdown();
         }
-    });
+    };
+    if (isTouchDevice()) {
+        document.addEventListener('touchend', hideThemeHandler);
+    } else {
+        document.addEventListener('click', hideThemeHandler);
+    }
     
-    // Event listeners.
-    dom.searchBtn.addEventListener('click', handleSearch);
+    // Event listeners with optimized touch/click handlers.
+    addTouchOrClick(dom.searchBtn, handleSearch);
     dom.songInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
             hideSearchHistory();
@@ -129,7 +140,7 @@ function init() {
     // Search history events.
     dom.songInput.addEventListener('focus', showSearchHistory);
     dom.songInput.addEventListener('input', handleSearchInput);
-    dom.clearHistoryBtn.addEventListener('click', clearSearchHistory);
+    addTouchOrClick(dom.clearHistoryBtn, clearSearchHistory);
     
     // Track artist input modifications.
     dom.artistInput.addEventListener('input', () => {
@@ -138,25 +149,30 @@ function init() {
         setArtistInputModified(hasValue);
     });
     
-    // Hide search history when clicking outside.
-    document.addEventListener('click', (e) => {
+    // Hide search history when clicking/touching outside.
+    const hideHistoryHandler = (e) => {
         if (!e.target.closest('.search-bar-wrapper')) {
             hideSearchHistory();
         }
-    });
+    };
+    if (isTouchDevice()) {
+        document.addEventListener('touchend', hideHistoryHandler);
+    } else {
+        document.addEventListener('click', hideHistoryHandler);
+    }
     
     // Queue/Playlist button in player bar.
     const queueBtn = document.querySelector('.player-bar-queue-btn');
     if (queueBtn) {
-        queueBtn.addEventListener('click', (e) => {
+        addTouchOrClick(queueBtn, (e) => {
             e.stopPropagation();
             togglePlaylist();
         });
     }
     
-    // Click player bar to open fullscreen player (except buttons).
+    // Touch/click player bar to open fullscreen player (except buttons).
     if (dom.musicPlayer) {
-        dom.musicPlayer.addEventListener('click', (e) => {
+        addTouchOrClick(dom.musicPlayer, (e) => {
             // Don't open fullscreen if clicking on buttons.
             if (e.target.closest('button')) {
                 return;
@@ -170,7 +186,7 @@ function init() {
         });
     }
     
-    dom.playPauseBtn.addEventListener('click', (e) => {
+    addTouchOrClick(dom.playPauseBtn, (e) => {
         e.stopPropagation(); // Prevent opening fullscreen when clicking play/pause.
         togglePlayPause();
     });
@@ -185,17 +201,17 @@ function init() {
         dom.volumeBar.addEventListener('input', handleVolumeChange);
     }
     
-    // Previous and Next button events.
+    // Previous and Next button events with optimized touch/click handlers.
     const prevBtn = document.querySelector('.prev-btn');
     const nextBtn = document.querySelector('.next-btn');
     if (prevBtn) {
-        prevBtn.addEventListener('click', async () => {
+        addTouchOrClick(prevBtn, async () => {
             await playPreviousTrack();
             renderPlaylist();
         });
     }
     if (nextBtn) {
-        nextBtn.addEventListener('click', async () => {
+        addTouchOrClick(nextBtn, async () => {
             await playNextTrack();
             renderPlaylist();
         });
@@ -203,29 +219,29 @@ function init() {
     
     // Shuffle and Repeat button events (only if exists - mobile may not have them).
     if (dom.shuffleBtn) {
-        dom.shuffleBtn.addEventListener('click', toggleShuffle);
+        addTouchOrClick(dom.shuffleBtn, toggleShuffle);
     }
     if (dom.repeatBtn) {
-        dom.repeatBtn.addEventListener('click', toggleRepeat);
+        addTouchOrClick(dom.repeatBtn, toggleRepeat);
     }
     
     // Queue/Playlist button events (only if exists - mobile may not have it).
     if (dom.queueBtn) {
-        dom.queueBtn.addEventListener('click', togglePlaylist);
+        addTouchOrClick(dom.queueBtn, togglePlaylist);
     }
     
     // Mobile uses infinite scroll, no pagination buttons needed.
     
     // Lyrics button events.
     if (dom.lyricsBtn) {
-        dom.lyricsBtn.addEventListener('click', toggleLyrics);
+        addTouchOrClick(dom.lyricsBtn, toggleLyrics);
     }
     if (dom.lyricsCloseBtn) {
-        dom.lyricsCloseBtn.addEventListener('click', toggleLyrics);
+        addTouchOrClick(dom.lyricsCloseBtn, toggleLyrics);
     }
     
-    // Hide playlist when clicking outside (including bottom nav buttons).
-    document.addEventListener('click', (e) => {
+    // Hide playlist when clicking/touching outside (including bottom nav buttons).
+    const hidePlaylistHandler = (e) => {
         // Close playlist if clicking outside the dropdown and queue button.
         // Also close if clicking on bottom nav buttons.
         const isClickingPlaylist = e.target.closest('.playlist-dropdown-bottom');
@@ -235,25 +251,30 @@ function init() {
         if (!isClickingPlaylist && !isClickingQueueBtn) {
             closePlaylistDropdown();
         }
-    });
+    };
+    if (isTouchDevice()) {
+        document.addEventListener('touchend', hidePlaylistHandler);
+    } else {
+        document.addEventListener('click', hidePlaylistHandler);
+    }
     
-    // Hide lyrics panel when clicking outside (on backdrop).
+    // Hide lyrics panel when clicking/touching outside (on backdrop).
     if (dom.lyricsPanel) {
-        dom.lyricsPanel.addEventListener('click', (e) => {
+        addTouchOrClick(dom.lyricsPanel, (e) => {
             if (e.target === dom.lyricsPanel) {
                 toggleLyrics();
             }
         });
     }
     
-    // Fullscreen player events.
+    // Fullscreen player events with optimized touch/click handlers.
     if (dom.fullscreenPlayerBackBtn) {
-        dom.fullscreenPlayerBackBtn.addEventListener('click', closeFullscreenPlayer);
+        addTouchOrClick(dom.fullscreenPlayerBackBtn, closeFullscreenPlayer);
     }
     
     // Fullscreen player play/pause button.
     if (dom.fullscreenPlayPauseBtn) {
-        dom.fullscreenPlayPauseBtn.addEventListener('click', togglePlayPause);
+        addTouchOrClick(dom.fullscreenPlayPauseBtn, togglePlayPause);
     }
     
     // Fullscreen player progress bar.
@@ -263,13 +284,13 @@ function init() {
     
     // Fullscreen player previous/next buttons.
     if (dom.fullscreenPrevBtn) {
-        dom.fullscreenPrevBtn.addEventListener('click', async () => {
+        addTouchOrClick(dom.fullscreenPrevBtn, async () => {
             await playPreviousTrack();
             renderPlaylist();
         });
     }
     if (dom.fullscreenNextBtn) {
-        dom.fullscreenNextBtn.addEventListener('click', async () => {
+        addTouchOrClick(dom.fullscreenNextBtn, async () => {
             await playNextTrack();
             renderPlaylist();
         });
@@ -277,12 +298,12 @@ function init() {
     
     // Fullscreen player shuffle button.
     if (dom.fullscreenShuffleBtn) {
-        dom.fullscreenShuffleBtn.addEventListener('click', toggleShuffle);
+        addTouchOrClick(dom.fullscreenShuffleBtn, toggleShuffle);
     }
     
     // Fullscreen player queue button.
     if (dom.fullscreenQueueBtn) {
-        dom.fullscreenQueueBtn.addEventListener('click', (e) => {
+        addTouchOrClick(dom.fullscreenQueueBtn, (e) => {
             e.stopPropagation();
             togglePlaylist();
         });

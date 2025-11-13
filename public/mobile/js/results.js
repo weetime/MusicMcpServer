@@ -9,6 +9,7 @@ import { playTrack } from './player.js';
 import { renderPlaylist } from './playlist.js';
 import { hideLoading } from './ui.js';
 import { handleSearch } from './search.js';
+import { addTouchOrClick } from './utils.js';
 
 // Infinite scroll state
 let currentPage = 1;
@@ -341,11 +342,11 @@ function createResultItem(track, index) {
     const playButton = document.createElement('button');
     playButton.className = 'play-button';
     playButton.innerHTML = '▶';
-    playButton.onclick = async (e) => {
+    addTouchOrClick(playButton, async (e) => {
         e.stopPropagation();
         await playTrack(track);
         renderPlaylist();
-    };
+    });
     
     // Assemble overlay.
     overlay.appendChild(artistName);
@@ -364,11 +365,11 @@ function createResultItem(track, index) {
     card.appendChild(artWrapper);
     card.appendChild(titleBg);
     
-    // Make entire card clickable.
-    card.onclick = async () => {
+    // Make entire card clickable with optimized touch/click handler.
+    addTouchOrClick(card, async () => {
         await playTrack(track);
         renderPlaylist();
-    };
+    });
     
     return card;
 }

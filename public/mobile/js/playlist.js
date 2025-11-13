@@ -6,6 +6,7 @@
 import { dom } from './dom.js';
 import { playlist, currentTrackIndex, setCurrentTrackIndex, setCurrentTrack, setIsPlaying } from './state.js';
 import { playTrack, updatePlayPauseIcon } from './player.js';
+import { addTouchOrClick } from './utils.js';
 
 /**
  * Renders the playlist dropdown.
@@ -65,19 +66,20 @@ export function renderPlaylist() {
                 <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
         `;
-        deleteBtn.onclick = (e) => {
+        addTouchOrClick(deleteBtn, (e) => {
             e.stopPropagation();
             deleteFromPlaylist(index);
-        };
+        });
         
         item.appendChild(albumArt);
         item.appendChild(info);
         item.appendChild(deleteBtn);
         
-        item.onclick = async () => {
+        // Use optimized touch/click handler for mobile.
+        addTouchOrClick(item, async () => {
             await playTrack(track);
             renderPlaylist();
-        };
+        });
         
         dom.playlistList.appendChild(item);
     });

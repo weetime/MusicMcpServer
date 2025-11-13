@@ -29,6 +29,30 @@ body::-webkit-scrollbar {
     height: 0;
 }
 
+/* Touch feedback styles for mobile devices. */
+.touch-active {
+    opacity: 0.7;
+    transform: scale(0.98);
+    transition: opacity 0.1s ease, transform 0.1s ease;
+}
+
+/* Disable text selection on touch elements for better UX. */
+button,
+[role="button"],
+.clickable,
+.search-history-item,
+.result-card,
+.playlist-item,
+.instrument-card,
+.theme-item {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
 /* Container - Mobile Only */
 .container {
     width: 100%;

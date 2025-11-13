@@ -4,6 +4,7 @@
  */
 
 import { themes, initTheme, setTheme, getCurrentTheme } from './theme.js';
+import { addTouchOrClick } from './utils.js';
 
 // DOM elements.
 let themeBtn = null;
@@ -101,8 +102,8 @@ function renderThemeList() {
         item.appendChild(nameSpan);
         item.appendChild(checkSpan);
         
-        // Add click event listener.
-        item.addEventListener('click', (e) => {
+        // Add optimized touch/click event listener.
+        addTouchOrClick(item, (e) => {
             e.stopPropagation();
             setTheme(theme.id);
             hideThemeDropdown();
