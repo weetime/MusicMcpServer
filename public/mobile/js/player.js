@@ -21,6 +21,7 @@ import { qualityNames } from './state.js';
 import { formatTime } from './utils.js';
 import { fetchLyrics, updateLyrics, clearLyrics, renderFullscreenLyrics } from './lyrics.js';
 import { alert } from './modal.js';
+import { getPlayPauseIcon } from './player-icons.js';
 
 /**
  * Updates search results padding based on player visibility.
@@ -244,11 +245,12 @@ export function togglePlayPause() {
  * Updates play/pause button icon.
  */
 export function updatePlayPauseIcon() {
-    dom.playPauseIcon.textContent = isPlaying ? '⏸' : '▶';
+    // Update player bar icon (20x20).
+    dom.playPauseIcon.innerHTML = getPlayPauseIcon(isPlaying, 20);
     
-    // Update fullscreen player play/pause icon if it exists.
+    // Update fullscreen player play/pause icon if it exists (32x32).
     if (dom.fullscreenPlayPauseIcon) {
-        dom.fullscreenPlayPauseIcon.textContent = isPlaying ? '⏸' : '▶';
+        dom.fullscreenPlayPauseIcon.innerHTML = getPlayPauseIcon(isPlaying, 32);
     }
 }
 

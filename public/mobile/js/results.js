@@ -10,6 +10,7 @@ import { renderPlaylist } from './playlist.js';
 import { hideLoading } from './ui.js';
 import { handleSearch } from './search.js';
 import { addTouchOrClick } from './utils.js';
+import { getPlayIcon } from './player-icons.js';
 
 // Infinite scroll state
 let currentPage = 1;
@@ -341,7 +342,7 @@ function createResultItem(track, index) {
     // Create play button overlay.
     const playButton = document.createElement('button');
     playButton.className = 'play-button';
-    playButton.innerHTML = '▶';
+    playButton.innerHTML = getPlayIcon(24);
     addTouchOrClick(playButton, async (e) => {
         e.stopPropagation();
         await playTrack(track);
