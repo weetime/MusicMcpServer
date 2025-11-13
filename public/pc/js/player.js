@@ -21,6 +21,7 @@ import { qualityNames } from './state.js';
 import { formatTime } from './utils.js';
 import { fetchLyrics, updateLyrics, clearLyrics } from './lyrics.js';
 import { alert } from './modal.js';
+import { getPlayPauseIcon } from './player-icons.js';
 
 /**
  * Updates search results padding based on player visibility.
@@ -134,7 +135,7 @@ export function togglePlayPause() {
  * Updates play/pause button icon.
  */
 export function updatePlayPauseIcon() {
-    dom.playPauseIcon.textContent = isPlaying ? '⏸' : '▶';
+    dom.playPauseIcon.innerHTML = getPlayPauseIcon(isPlaying, 20);
 }
 
 /**
