@@ -7,6 +7,7 @@ import { dom } from './dom.js';
 import { MAX_HISTORY_ITEMS } from './state.js';
 import { handleSearch, setArtistInputModified } from './search.js';
 import { confirm } from './modal.js';
+import { addTouchOrClick } from './utils.js';
 
 /**
  * Saves a search query to history.
@@ -92,18 +93,19 @@ export function renderSearchHistory() {
                 <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
         `;
-        deleteBtn.onclick = (e) => {
+        addTouchOrClick(deleteBtn, (e) => {
             e.stopPropagation();
             deleteHistoryItem(index);
-        };
+        });
         
         item.appendChild(icon);
         item.appendChild(text);
         item.appendChild(deleteBtn);
         
-        item.onclick = () => {
+        // Use optimized touch/click handler for mobile.
+        addTouchOrClick(item, () => {
             selectHistoryItem(query);
-        };
+        });
         
         dom.searchHistoryList.appendChild(item);
     });

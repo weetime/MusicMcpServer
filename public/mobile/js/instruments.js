@@ -5,6 +5,7 @@
 
 import { handleSearch } from './search.js';
 import { getInstrumentIcon, preloadIcons } from './instrument-icons.js';
+import { addTouchOrClick } from './utils.js';
 
 // Selected instruments list.
 export const instruments = [
@@ -76,8 +77,8 @@ export async function renderInstruments(container) {
         instrumentCard.appendChild(iconDiv);
         instrumentCard.appendChild(labelDiv);
         
-        // Add click handler to search for instrument music.
-        instrumentCard.addEventListener('click', () => {
+        // Add optimized touch/click handler to search for instrument music.
+        addTouchOrClick(instrumentCard, () => {
             // Search using Chinese name only (no spaces) to avoid being parsed as song name and artist.
             const searchQuery = instrument.chinese;
             handleInstrumentSearch(searchQuery);
