@@ -1,13 +1,5 @@
 {
   "version": 2,
-  "buildCommand": "echo 'No build needed'",
-  "outputDirectory": ".",
-  "framework": null,
-  "functions": {
-    "server.js": {
-      "runtime": "nodejs18.x"
-    }
-  },
   "builds": [
     {
       "src": "server.js",
@@ -20,16 +12,18 @@
       "dest": "server.js"
     },
     {
-      "src": "/web/(.*)",
-      "dest": "/public/pc/$1"
-    },
-    {
-      "src": "/mobile/(.*)",
-      "dest": "/public/mobile/$1"
-    },
-    {
       "src": "/",
       "dest": "server.js"
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/web/:path*",
+      "destination": "/public/pc/:path*"
+    },
+    {
+      "source": "/mobile/:path*",
+      "destination": "/public/mobile/:path*"
     }
   ],
   "headers": [
