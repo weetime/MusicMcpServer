@@ -274,13 +274,14 @@
 
 .fullscreen-player-progress-bar {
     flex: 1;
-    height: 4px;
-    border-radius: 2px;
+    height: 6px;
+    border-radius: 3px;
     outline: none;
     background: var(--border-secondary);
     cursor: pointer;
     -webkit-appearance: none;
     transition: height 0.2s ease;
+    touch-action: none;
 }
 
 .fullscreen-player-progress-bar:hover {
@@ -289,32 +290,44 @@
 
 .fullscreen-player-progress-bar::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 14px;
-    height: 14px;
+    width: 16px;
+    height: 16px;
     border-radius: 50%;
     background: var(--accent-primary);
     cursor: pointer;
-    opacity: 0;
-    transition: opacity 0.2s ease;
+    opacity: 1;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .fullscreen-player-progress-bar:hover::-webkit-slider-thumb {
     opacity: 1;
+    transform: scale(1.2);
+}
+
+.fullscreen-player-progress-bar:active::-webkit-slider-thumb {
+    transform: scale(1.3);
 }
 
 .fullscreen-player-progress-bar::-moz-range-thumb {
-    width: 14px;
-    height: 14px;
+    width: 16px;
+    height: 16px;
     border-radius: 50%;
     background: var(--accent-primary);
     cursor: pointer;
     border: none;
-    opacity: 0;
-    transition: opacity 0.2s ease;
+    opacity: 1;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .fullscreen-player-progress-bar:hover::-moz-range-thumb {
     opacity: 1;
+    transform: scale(1.2);
+}
+
+.fullscreen-player-progress-bar:active::-moz-range-thumb {
+    transform: scale(1.3);
 }
 
 /* Main Playback Controls */
@@ -455,6 +468,22 @@
 
     .fullscreen-player-progress-section {
         padding: 10px 12px;
+    }
+
+    .fullscreen-player-progress-bar {
+        height: 6px;
+    }
+
+    .fullscreen-player-progress-bar::-webkit-slider-thumb {
+        width: 16px;
+        height: 16px;
+        opacity: 1;
+    }
+
+    .fullscreen-player-progress-bar::-moz-range-thumb {
+        width: 16px;
+        height: 16px;
+        opacity: 1;
     }
 
     .fullscreen-player-main-controls {
