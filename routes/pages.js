@@ -12,23 +12,23 @@ const detectDevice = require('../middleware/deviceDetection');
  * Root route with device detection and auto-redirect.
  * GET /
  * - Mobile devices → redirect to /mobile/
- * - Desktop devices → redirect to /web/
+ * - Desktop devices → redirect to /pc/
  */
 router.get('/', detectDevice, (req, res) => {
     if (req.isMobile) {
         res.redirect('/mobile/');
     } else {
-        res.redirect('/web/');
+        res.redirect('/pc/');
     }
 });
 
 /**
  * Web/PC version route with device detection.
- * GET /web
+ * GET /pc
  * - Mobile devices → redirect to /mobile/
  * - Desktop devices → serve PC version HTML
  */
-router.get('/web', detectDevice, (req, res) => {
+router.get('/pc', detectDevice, (req, res) => {
     if (req.isMobile) {
         // Redirect mobile devices to mobile version.
         res.redirect('/mobile/');

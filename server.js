@@ -21,8 +21,8 @@ app.use(express.json());
 // ============================================
 // Static File Serving
 // ============================================
-// Serve static files for PC/Web version.
-app.use('/web', express.static(path.join(__dirname, 'public/pc'), {
+// Serve static files for PC/PC version.
+app.use('/pc', express.static(path.join(__dirname, 'public/pc'), {
     setHeaders: (res, filePath) => {
         // Ensure JavaScript files are served with correct MIME type for ES modules
         if (filePath.endsWith('.js')) {
@@ -48,7 +48,7 @@ app.use('/mobile', express.static(path.join(__dirname, 'public/mobile'), {
 // ============================================
 // Routes
 // ============================================
-// Page routes (/, /web, /mobile) - must be before API routes
+// Page routes (/, /pc, /mobile) - must be before API routes
 app.use('/', pageRoutes);
 
 // API routes
